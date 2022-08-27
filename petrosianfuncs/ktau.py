@@ -1,7 +1,7 @@
-import numpy as np
-import math
-import pandas as pd
-from petrosianfuncs.cosmology import *
+#import numpy as np
+#import math
+#import pandas as pd  # --> these three lines are already imported by cosmology
+from cosmology import *
 
 #####################################################
 #####################################################
