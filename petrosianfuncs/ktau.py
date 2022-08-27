@@ -1,6 +1,5 @@
-#import numpy as np
-#import math
-#import pandas as pd  # --> these three lines are already imported by cosmology
+#import numpy as np # --> already imported by cosmology
+import pandas as pd  
 from cosmology import *
 
 #####################################################
