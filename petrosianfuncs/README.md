@@ -16,4 +16,6 @@ $\displaystyle D_C(z) = \int \frac{dz}{E(z)}$ (comoving distance)
 $D_L(z) = (1+z)D_C(z)$ (luminosity distance)
 
 ### Dispersion Measures
-$\displaystyle \left(\frac{dDM}{dz}\right)_\mathrm{Arcus} = $
+$\displaystyle \left(\frac{dDM}{dz}\right)_\mathrm{Arcus} = C (1+z) $
+
+$\displaystyle C = \frac{3cH_0 \Omega_b}{8\pi G m_H}$

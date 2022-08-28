@@ -1,0 +1,683 @@
+Received: from BN6PR02MB2657.namprd02.prod.outlook.com (2603:10b6:a03:14b::46)
+ by BYAPR02MB4581.namprd02.prod.outlook.com with HTTPS via
+ BYAPR06CA0069.NAMPRD06.PROD.OUTLOOK.COM; Fri, 22 May 2020 16:00:47 +0000
+Received: from MN2PR02CA0003.namprd02.prod.outlook.com (2603:10b6:208:fc::16)
+ by BN6PR02MB2657.namprd02.prod.outlook.com (2603:10b6:404:fc::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Fri, 22 May
+ 2020 16:00:46 +0000
+Received: from BL2NAM02FT060.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:208:fc:cafe::b1) by MN2PR02CA0003.outlook.office365.com
+ (2603:10b6:208:fc::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23 via Frontend
+ Transport; Fri, 22 May 2020 16:00:46 +0000
+Authentication-Results: spf=neutral (sender IP is 148.163.149.245)
+ smtp.mailfrom=list.cornell.edu; o365.stanford.edu; dkim=fail (signature did
+ not verify) header.d=gmail.com;o365.stanford.edu; dmarc=fail action=none
+ header.from=gmail.com;compauth=none reason=405
+Received-SPF: Neutral (protection.outlook.com: 148.163.149.245 is neither
+ permitted nor denied by domain of list.cornell.edu)
+Received: from mx0a-00000d04.pphosted.com (148.163.149.245) by
+ BL2NAM02FT060.mail.protection.outlook.com (10.152.76.124) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3021.23 via Frontend Transport; Fri, 22 May 2020 16:00:46 +0000
+Received: from pps.filterd (m0102886.ppops.net [127.0.0.1])
+	by mx0a-00000d04.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04MFxnFt019254
+	for <vahep@o365.stanford.edu>; Fri, 22 May 2020 09:00:45 -0700
+Authentication-Results-Original: ppops.net;	spf=neutral
+ smtp.mailfrom=bounce-124649351-84845046@list.cornell.edu;	dkim=fail
+ header.s=20161025 header.d=gmail.com;	dmarc=none header.from=gmail.com
+Received: from mx0b-00000d03.pphosted.com (mx0b-00000d03.pphosted.com [148.163.153.234])
+	by mx0a-00000d04.pphosted.com with ESMTP id 312ebjen76-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <vahep@o365.stanford.edu>; Fri, 22 May 2020 09:00:45 -0700
+Received: from pps.filterd (m0214089.ppops.net [127.0.0.1])
+	by mx0a-00000d03.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04MG03IP001010
+	for <vahep@stanford.edu>; Fri, 22 May 2020 09:00:44 -0700
+Received: from list.cornell.edu (vs-01.list.cornell.edu [128.253.150.160])
+	by mx0a-00000d03.pphosted.com with ESMTP id 312fc79xg4-1
+	for <vahep@stanford.edu>; Fri, 22 May 2020 09:00:44 -0700
+Received: from sf-e2013-06.exchange.cornell.edu ([10.22.40.53]) by 10.22.40.80 with SMTP (Lyris ListManager LINUX version 12.3.8.6); Fri, 22 May 2020 12:00:28 -0400
+Received: from sf-e2013-09.exchange.cornell.edu (10.22.40.56) by sf-e2013-06.exchange.cornell.edu (10.22.40.53) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 22 May 2020 12:00:28 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.106) by sf-e2013-09.exchange.cornell.edu (10.22.40.56) with Microsoft SMTP Server (TLS) id 15.0.1395.4 via Frontend Transport; Fri, 22 May 2020 12:00:28 -0400
+Received: from CO1PR15CA0110.namprd15.prod.outlook.com (2603:10b6:101:21::30) by BN7PR04MB4212.namprd04.prod.outlook.com (2603:10b6:406:fd::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Fri, 22 May 2020 16:00:25 +0000
+Received: from CO1NAM05FT024.eop-nam05.prod.protection.outlook.com (2603:10b6:101:21:cafe::3f) by CO1PR15CA0110.outlook.office365.com (2603:10b6:101:21::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.24 via Frontend Transport; Fri, 22 May 2020 16:00:25 +0000
+Received: from mail-vs1-f43.google.com (209.85.217.43) by CO1NAM05FT024.mail.protection.outlook.com (10.152.96.132) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.8 via Frontend Transport; Fri, 22 May 2020 16:00:25 +0000
+Received: by mail-vs1-f43.google.com with SMTP id b28so4271194vsa.5 for <FRB-news-L@cornell.edu>; Fri, 22 May 2020 09:00:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025; h=mime-version:from:date:message-id:subject:to; bh=OkNpVjvaBqdKe9W7zseB04T8fnHguVkk0WMf1169EII=; b=ZM9zaWaO9PST2Gtk24JdOO9TtmR5d8DD6RbHsuRaCpuH5jjM+QuOOsQiDZ9i7iF6kJ dYOPh93iQ+HVtKtOeuCFxeI0hcBRXLuB3JrIRkEo3hzbBYhEC8jxmWk7ky9fQCbSHS9k V3xq+xMj8NmAsuA40GGG0WN9TQg9hMx/fze4jnE+JMldzRY2HP3DNsDPxDX0DfPYbywh exlPzB853R8M1+GruaE0yTRgPLoGUD8vG+W/6t6JyjDAgFl08a8VPcAgQesH5NoD91m0 6ROYxt+HfPxTZa6FhD9lUaioDxI0u1oySHR+t6mhNKGla2nbtrs+38MFHSDa8iC0jSkI 6vsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=1e100.net; s=20161025; h=x-gm-message-state:mime-version:from:date:message-id:subject:to; bh=OkNpVjvaBqdKe9W7zseB04T8fnHguVkk0WMf1169EII=; b=kFS/mEPwHIkjY4OBKTIHkOVJ5nn5LXXAvpuO9kMzmzRhcivhxK+YcyqO11Zj/WNgV2 4nN/F36QkhtO54xEOkpJbusbomP1rMhE2Son57u3yzxM86SmYsuXO5/6GwzhODXH7fHX Z1Z7Uxp8xp4wwAKip+3/uUsTA2VPBmrYSEoFvi7Zaoi/WNE4ZxTwSNgCawOcSUg1WxSQ ry27rnLgXGvJnNZx4furIhTXArca89yfAuu8pRLMA4CbI32vfdkEmZgKOgqheYkog0fg iC5dh0Hfj4fhclpYIQQlq8Gr1amH455hJywUl1KFS4WOoeuwAquKxnJCSaWeJfvPbYhd jHcg==
+X-Gm-Message-State: AOAM533r+4z21eKtLmFAOLtg9xEOSyf7TQJHDUTr7VpA7XXpheshbvRq jfyEGii5ADuMEB2WLCuBMGJbiOItbEt0fUmJOlrN25YJmYQ/nw==
+X-Google-Smtp-Source: ABdhPJwCjdhm18l8DjLiZLC5j3HgQgF7abKie9QNkDMMPUYGXYu8EbyxyV/V3oWCyCguheNLKVFHMRKjkDEU5ATmf60=
+X-Received: by 2002:a05:6102:d5:: with SMTP id u21mr11919902vsp.6.1590163223494; Fri, 22 May 2020 09:00:23 -0700 (PDT)
+From: Emily Petroff <ebpetroff@gmail.com>
+Date: Fri, 22 May 2020 18:00:00 +0200
+Message-ID: <LYRIS-84845046-124649351-2020.05.22-12.00.39--vahep#stanford.edu@list.cornell.edu>
+Subject: =?UTF-8?Q?FRB_Community_Newsletter_=E2=80=94_Issue_09?=
+To: FRB News <FRB-news-L@cornell.edu>
+Content-Type: multipart/alternative; boundary="000000000000124cc205a63eba99"
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;OLM:10000;
+X-Microsoft-Antispam-Message-Info-Original:
+ =?us-ascii?Q?XpLCqMHXpelN1nRKSnplQOzGas96XR5SDcfSEaHwXzomLSx3TsjU30py4bdb?=
+ =?us-ascii?Q?tfI+v4eci+acYgkkNaUV05Sr1KGwrr1dleXNXlikxhK2Bep+/+IApqJXyn+o?=
+ =?us-ascii?Q?e+rr2qNN97ts2k/Y2G80IntqRiOCJF6QVKBZ7LvUZ5ZKX5uVGyV7xbW8+R21?=
+ =?us-ascii?Q?53Oo8JiLXZoyx4I5wc7BB7NYqu4FRjPXFuZAHJrKTXmNr6roHoJXSCZ+4gau?=
+ =?us-ascii?Q?SgPw8j3WKvMeWfG/kwN/rEslebNudIYkcNkt2DvyhZ/TSTrbuIqu972vT2yp?=
+ =?us-ascii?Q?S/nvqIbzUeg0EUsDR2lEdQU9AsmKgl4sxaHClnhSCWUx2up4awAeG5CG17AX?=
+ =?us-ascii?Q?+Hj0r+94m3IHT+ZrKuSp8qa5I27tzN9dKwXsIKFdGY5uCHyOaRfqdREPmbH7?=
+ =?us-ascii?Q?Og1sngq/iPg7Ot84nkbUt+TFvA0hMK70TT8FdzWCa+re2NcaTcdaIccGc58H?=
+ =?us-ascii?Q?jTomLexMA5bcK46jsDwjSZqLDdsz1VzeeXu3MvefFjYK70Hy+wNkSGq2kH14?=
+ =?us-ascii?Q?H0V6tN7VvpEmxR/bmzgllGPPCyNVZzhXjxcPKD0b+Ok/RLBnUEhkFXe/p5vO?=
+ =?us-ascii?Q?XPl3g1ieIXwN0TcAqVMFblLxjatTrrdF6FHrxonb1qByKtPrnnMoM5EVSSuS?=
+ =?us-ascii?Q?29r2LwqVMmRFwxhkIqVfidfT4KjcXL/qjHGuZyDeOsltNGcYMP0rsvPEW76Y?=
+ =?us-ascii?Q?dis17I34grNaQuTUdSZscgNyeHjqbxGB4db3k2SD76D+gxrfuNNvVyoFdLvh?=
+ =?us-ascii?Q?5Ev0BBPE3J4QwDjPH6l2ZsMB/rhg6J8PtbK1FOguiU5Qs8IE/4djtHVVoJHH?=
+ =?us-ascii?Q?NV51k/BPf3R6nHiv+JDNHdQfZyByBc9PNcpjPrZWRUh+vMcoi3qCaW4asyni?=
+ =?us-ascii?Q?cPurGhmQgUjqtwG6lMAKtustTeApARShcbwU5U1D5/y84D6qgx7twrVAK2oM?=
+ =?us-ascii?Q?9cK2lcexPbXIhTy2g1U/TWWXn8IlygDI3syvutidOLJLpl/zEvLCx2jBoNF9?=
+ =?us-ascii?Q?HrOEI4+sxmRSE8DkdY3UItKr7dNBA80+wzbz2XckfnMDnw5FP/LLYZj/UYf4?=
+ =?us-ascii?Q?A+wxCIwoU+mXNYyHvbGYyB0PVcQLxZCA49Jq+Ozfn6jY+7Cwl4JVjqCHE3NZ?=
+ =?us-ascii?Q?svC2+XJcLfc1o7YLBgov8CDH5C34U8wqN7EyhquNhiC1UYle53MXx3A=3D?=
+List-Unsubscribe: <mailto:leave-124649351-84845046.f0334f5d97bb242bf4ea4f569f37c9f3@list.cornell.edu>
+List-Subscribe: <mailto:subscribe-frb-news-l@list.cornell.edu>
+List-Owner: <mailto:owner-frb-news-l@list.cornell.edu>
+X-List-Host: Cornell University Centric Lists 
+Reply-To: ebpetroff@gmail.com, shami@astro.cornell.edu
+X-Message-ID: <CA+oMBTqMMKde7q8rzDhzNnLjsmU0G3Q0B8QKSOO2DRLzy8o2sw@mail.gmail.com>
+Sender: bounce-124649351-84845046@list.cornell.edu
+List-Id: <frb-news-l.cornell.edu>
+x-proofpoint-stanford-dir: inbound
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-22_05:2020-05-22,2020-05-22 signatures=0
+X-CLX-Shades: MLX
+X-CLX-Response: 1TFkXGxkfEQpMehcaEQpZRBd6RGB8X0sFewFzchEKWFgXbk1zEkJ7Tl1je38 RCnhOF2lLYhxcc2VBUkBAEQp4SxduTXMSQntOXWN7fxEKeEwXZ0FlU29AWkNtf04RCnlMF2tjUk xoTx9ESExvEQp5Qxd6XEsTfl8fRG5GXhEKQ0gXBx4fHhEKQ1kXBxsfExEKQ0kXGgQaGhoRCllNF
+ 2dmchEKWUkXGnEaEBp3BhsbH3EbGRAadwYYGgYaEQpZXhdobnkRCklGF1leS0RMRVhOdUJTTUNP RE91WlhFTl9JXkNFRHVCRVleT04RCkNOF0xpH31BTnptYUVCTnxOblJpH1gSEnwZB2t4WFoSSX9 gEQpYXBcfBBoEGBoZBRsaBBsaGgQeEgQbExAbHhofGhEKXlkXfAVwXGMRCk1cFxsbExEKTFoXaG
+ 1da3sRCkxGF3Nra2NpbhEKQk8Xb2VtYEdFSRl8XWcRCkNaFxsYEgQYHxkEGx8aBBscGhEKQl4XG xEKQkYXa2lDSV17UxNETnoRCkJHF2hzWE4bZEVAHhluEQpCXBcaEQpCRRdvQx9tex5iUmllehEK Qk4XY1Nja3sTWH4aX14RCkJMF2t9b21wbVBTfB9EEQpCbBdtb3kFb35aGk1fRxEKQkAXekJsQmV
+ vfElLfk0RCkJYF2sBYlxhbRJ8WktNEQpaWBceEQpZSxcTGh4TEQpaSxcbGB0ZGhEKcGcXaFxuZG FBBU1Qa1sQGhEKcGgXbHJdYR95eExtelwQGhEKcGgXbEliYUMcY2RAf38QGhEKcGgXZgEZGxhBH QUbEh4QGhEKcGgXb3hsZWJcHWRBcGkQGhEKcGgXYRIeHmweekdBXlwQGhEKcH0XZHteEwESckVg
+ ehgQGhEKcH0XZBx9HVpYZHhwR2UQGhEKcH0XbgUYZlpaQkNBWkMQGhEKcH0XZk9bTW5IYR5vSHA QGhEKcH0XaRJhbltzR2QYbnIQGhEKcH0Xa0cYThptAQFPHUAQGhEKcH0XZGRrHWVjBX1YZ0YQGh EKcH0XelNDTmNOG1xEWmwQGhEKcH0XZ01aQlwSfXJ6BRsQGhEKcH0XbW8SYUtJH0BjTxIQGhEKc
+ H0XY2cfH29pXWhzbE0QGhEKcH0XY2EFeUVoZ3JeWHkQGhEKcH0XZBNdZn5fSUhZXnMQGhEKcH0X YHhESU5rWWFDb20QGhEKcH0XaxJMYRN5ex59eXkQGhEKcH0XYwEZGlwFZE9TYUAQGhEKcH0XaBN EelkcYk4BHkYQGhEKcH0XYB58cE5PZEFlHEgQGhEKcH0XYlIfGUQbS2FAX2gQGhEKcH0XenpaaB
+ 1IZRhTEnwQGhEKcH8XZFp/Y21pYG5CGVMQHRIRCnBfF2N7ZRtQfngfRkJOEB0SEQpwfxdtQ2VkG GZITWF/GhAfGxEKcF8Xb0JCQR8ebmNmTGcQGhEKcGwXYhwFXFJFWU0daWMQGhEKcEMXaVxwfE5s E2sTfxMQHhgRCm1+FxoRClhNF0sRIA==
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-22_05:2020-05-22,2020-05-22 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 cotscore=-2147483648 impostorscore=0
+ phishscore=0 adultscore=0 clxscore=135 bulkscore=0 malwarescore=0
+ lowpriorityscore=0 mlxlogscore=999 spamscore=0 mlxscore=0 suspectscore=10
+ priorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2004280000 definitions=main-2005220129
+Return-Path: bounce-124649351-84845046@list.cornell.edu
+X-MS-Exchange-Organization-ExpirationStartTime: 22 May 2020 16:00:46.8321
+ (UTC)
+X-MS-Exchange-Organization-ExpirationStartTimeReason: OriginalSubmit
+X-MS-Exchange-Organization-ExpirationInterval: 1:00:00:00.0000000
+X-MS-Exchange-Organization-ExpirationIntervalReason: OriginalSubmit
+X-MS-Exchange-Organization-Network-Message-Id:
+ d5227681-3848-4a5e-0470-08d7fe694a55
+X-EOPAttributedMessage: 0
+X-EOPTenantAttributedMessage: 396573cb-f378-4b68-9bc8-15755c0c51f3:0
+X-MS-Exchange-Organization-MessageDirectionality: Incoming
+X-MS-Exchange-Transport-CrossTenantHeadersStripped:
+ BL2NAM02FT060.eop-nam02.prod.protection.outlook.com
+X-Forefront-Antispam-Report:
+ CIP:148.163.149.245;CTRY:US;LANG:en;SCL:-1;SRV:;IPV:NLI;SFV:SKN;H:mx0a-00000d04.pphosted.com;PTR:mx0a-00000d04.pphosted.com;CAT:NONE;SFTY:;SFS:;DIR:INB;SFP:;
+X-MS-PublicTrafficType: Email
+X-MS-Exchange-Organization-AuthSource:
+ BL2NAM02FT060.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-Office365-Filtering-Correlation-Id: d5227681-3848-4a5e-0470-08d7fe694a55
+X-MS-TrafficTypeDiagnostic: BN6PR02MB2657:
+X-MS-Exchange-Organization-SCL: -1
+X-Microsoft-Antispam: BCL:0;
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 May 2020 16:00:46.5262
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d5227681-3848-4a5e-0470-08d7fe694a55
+X-MS-Exchange-CrossTenant-Id: 396573cb-f378-4b68-9bc8-15755c0c51f3
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR02MB2657
+X-MS-Exchange-Transport-EndToEndLatency: 00:00:01.3399348
+X-MS-Exchange-Processed-By-BccFoldering: 15.20.3000.034
+X-Microsoft-Antispam-Mailbox-Delivery:
+	ucf:0;jmr:0;auth:0;dest:I;ENG:(750128)(520011016)(944506383)(944626604);
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?cFZIbForanhWa1hWRkxZNlpaTUxHelFiQlZWandubzM0RHRTOUZjSSsyOVhR?=
+ =?utf-8?B?czhFTDg2ekwvQ2JrQ1NoZldzS1J5cHFtZ2s1b003TTlldlNVUlAwaHdSS25Y?=
+ =?utf-8?B?L0xIb3JhZ2t4c0ZkSkdROHhySU0zbmp2NFBpRmdIWDZzNEt6aDlNVmhJTndH?=
+ =?utf-8?B?TUVXNXdqdSthbVhSWmg5YlRwTXZFcTZxRnMzOW1DbFU5ZEZMRVR4ZjRxdGls?=
+ =?utf-8?B?c1hmb3d5djI4ZzBXYU5kdklMcjhZc3JUeU95MHdaM0xjNlFYRm13YW5qUXFQ?=
+ =?utf-8?B?Wlk0Unhvajg3Q0NxYWdXRUNsOCtZcmVjOVFBUG9DR3Z6S3hBSlNIMW1rbk4y?=
+ =?utf-8?B?b1ZsRTB4SzI5R1ZoUTlaLzNTcUp6UHYrY0VZYVUzbUVqazNpankyL2ExWkd2?=
+ =?utf-8?B?S01DSDFPMlVKZmJYRkZzU1VmNTNXUXp2ZWJ0TEdhUDkzcDF6c2dlSjhGUVZs?=
+ =?utf-8?B?UmZCUnM0TWJ5U0o5dzhUMkVBTTl5T1B6TC9KaXdFaG1yY3JmWnA5NUZWaUVX?=
+ =?utf-8?B?ZkgzZEthTWsvcmc4YkpScnBFUDFpNDhNd3NjVnp6VzEwVDBzNDVIbit1QlVM?=
+ =?utf-8?B?R3VEWmRRNVZGRVBFb0tFcTIrUk51MCt0Tmh4YXc5M3FzaUUxQVpKOUNaZTlY?=
+ =?utf-8?B?by9ZN3I5K2ZWYm91U0Y4VTE4N05YWWxBYzZWckNmWjViaVhpdVR5bXo1dEpl?=
+ =?utf-8?B?OCtGUjFoaEFwK0JPcUxwQVlKVHB5OG9WVWhjSTh2Qldqd2RtRExkM0RKWkp3?=
+ =?utf-8?B?bVdBWDFHanNldzJvbWhzQ3BmUGVEZ04xQVhXZUFPSzZJOTFweDg1WGF2TWli?=
+ =?utf-8?B?WWpSYjZTVEEvNk9haWpBRTBFMXNZSkJWWTNBQ1IxTzVuWForZjhBQ2F6dldO?=
+ =?utf-8?B?MEtxYTJ3d1dvWkx3UEkzTHcxYzJSWWpoQWdEREpVbWVsZE13MHNpc2g3SUVv?=
+ =?utf-8?B?N1pVYnA4OFFWNDA2UlBLdzRvdzlOTVdRNXhwWjBBOWRaTkpBQmhRQTBSbHcy?=
+ =?utf-8?B?RHkram1TSjhpVzM4S2VYYlBZRnFXV25LcmJFdEJnNUZyNmFMRnNnWHd0UGto?=
+ =?utf-8?B?MytreEtCbFZFbmVWbTBZV1dLZUVBdnMyTnp5NExDdlNNNWpEZ3FZTFlNamM1?=
+ =?utf-8?B?Q1RiTnErVUxYTmpvaU4wc1dqZmRoYmZVVUd0aWhjNnF2aEhpZGg3YXR6N1Na?=
+ =?utf-8?B?VG1XeHYyVVNyU1dUMWNLTlpUQVB5YkdkWmxyV2s3YmJVNlJvaHJDSUM3ZDJo?=
+ =?utf-8?B?TytnaE4wOUhJTkcxM0ovakIxdFB3SThybXdhNWNjUVdoMkJuY0MvWmlPM1NK?=
+ =?utf-8?B?YWpoQzJCU082QlNQRlBKaXI4ZzNrcnJNQnlsRDFWbk13TXA5M3A2ZzlDNThJ?=
+ =?utf-8?B?QlBBMHI5STZOQkxyczFKZ1EvZE03amc5emFsUU56enZHMnREbGtZTnovd0d6?=
+ =?utf-8?B?ZzMyY3RxcXQwK1JkemhickN0eUJibGQ1azkwU0pDZEJmRjdUMTR5ZFZsMTk2?=
+ =?utf-8?B?eFBVZ3p4U3N4eGgxV08rSE1zSUQrcE5GMkJwSHhOd0dXM3JVYU9KKzlGSUNk?=
+ =?utf-8?B?NHVrZ1EvUUF3TG9lbTBkbm5GUHRGQnQva0E2K3llMkQzKzBERGhPYXVnNGc1?=
+ =?utf-8?B?eXdaaThmbTQ4enFvbGlRMFRtbmszZ01mbTVEM3FKUUpUeWdoMUNxb2FyanNq?=
+ =?utf-8?B?a2dROTdQci9XZEVRdXIyOFZYRlgwMmFvcTdWaXhxOVp5d2M3VEQrZlpJVE5l?=
+ =?utf-8?B?Y01EZWdZOTJzNkNwanhXbThrSkxqTlRPelkrNUdDYkpIN1E4WHhqS3l2ZVZ6?=
+ =?utf-8?B?TFJRdzlHV3MwbWZTdkpVRlUxaGdnMVFtSjNhS3ZQdDlZL1REZjZNN09XaytS?=
+ =?utf-8?B?Yk5XR0loay9HUEQ5emZmQ1VTaWE2d0U4VmFtNVRPMkJ6UElWYTlFbVZPNzZN?=
+ =?utf-8?B?am9IU2ZnaHFnQlc4aXVxWkxzZTZQZlZRQzhVaXNiZ0VsT1NKSzl3Z0ZQamNT?=
+ =?utf-8?B?cUxvcEp2NUFBa2dGT21YMnIzRVYwSy84RllCekZCQnZjWitIdG5aanpHaFdy?=
+ =?utf-8?B?eFBRbm9ORnFIakFyYllvNEhGMnRGenVRbWtFQT09?=
+MIME-Version: 1.0
+
+--000000000000124cc205a63eba99
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+FRB Newsletter Issue 09 =E2=80=94 May 2020
+
+Total FRB count: 122
+Repeaters: 21
+
+From the editors:
+
+The news this month has been dominated by the burst of activity related to
+the Galactic magnetar SGR 1935+2154. The detection of radio bursts from the
+source suggests a link between magnetars and (possibly some subset of) the
+extragalactic FRB phenomenon. While most of the observational results are
+yet to be published, we summarize the relevant rapid communications and the
+theoretical interpretations that have been put forward so far. We hope you
+enjoy this unusually busy issue of the newsletter during these trying times=
+.
+
+A burst of activity from SGR 1935+2154
+
+
+   - On 27 April, 2020 a =E2=80=9Cforest of X-ray bursts=E2=80=9D was detec=
+ted from the
+   Galactic soft gamma repeater SGR 1935+2154 by the Swift BAT (ATel 13675
+   <http://www.astronomerstelegram.org/?read=3D13675>), NICER (ATel 13678
+   <http://www.astronomerstelegram.org/?read=3D13678>), and AGILE (ATel 136=
+82
+   <http://www.astronomerstelegram.org/?read=3D13682>). This activity was
+   quickly followed up by Swift monitoring (ATel 13679
+   <http://www.astronomerstelegram.org/?read=3D13679>).
+   - On 28 April, 2020 a bright millisecond radio burst was detected from
+   this source by both the CHIME telescope (ATel 13681
+   <http://www.astronomerstelegram.org/?read=3D13681>) and by STARE2 (ATel
+   13684 <http://www.astronomerstelegram.org/?read=3D13684>), with a DM of
+   ~333 pc/cc and estimated radio fluences of a few kJy ms (CHIME, 400-800
+   MHz) and 1.5 MJy ms (STARE2, 1.4 GHz).
+      - Bochenek et al. (ATel 13684
+      <http://www.astronomerstelegram.org/?read=3D13684>) state that if "*.=
+..
+      the source were placed at the distance of FRB 180916.J0158+65 (149 Mp=
+c),
+      the fluence of this burst would be >7 mJy ms. We conclude that active
+      magnetars are a source of FRBs at extragalactic distances.*"
+      - The double-peaked CHIME dynamic spectrum is available to view
+      <https://storage.googleapis.com/chimefrb-dev.appspot.com/SGR1935+2154=
+/SGR1935+2154.png>
+      .
+      - Two preprints reporting on this radio burst have just been
+      released; see below.
+   - An X-ray flare temporally coincident with the CHIME/STARE2 radio burst
+   was reported by INTEGRAL (ATel 13685
+   <http://www.astronomerstelegram.org/?read=3D13685>), AGILE (ATel 13686
+   <http://www.astronomerstelegram.org/?read=3D13686>), Insight-HXMT (ATel
+   13687 <http://www.astronomerstelegram.org/?read=3D13687>, ATel 13692
+   <http://www.astronomerstelegram.org/?read=3D13692>, ATel 13696
+   <http://www.astronomerstelegram.org/?read=3D13696>, ATel 13704
+   <http://www.astronomerstelegram.org/?read=3D13704>), and Konus-Wind (ATe=
+l
+   13688 <http://www.astronomerstelegram.org/?read=3D13688>).
+   - Upper limits on persistent radio emission have been established with
+   the VLA (ATel 13690 <http://www.astronomerstelegram.org/?read=3D13690>,
+   ATel 13693 <http://www.astronomerstelegram.org/?read=3D13693>), and
+   searches for radio pulses with commensal realfast observations at the VL=
+A,
+   FAST at 1.25 GHz (ATel 13697
+   <http://www.astronomerstelegram.org/?read=3D13697>), LOFAR at 150 MHz
+   (ATel 13707 <http://www.astronomerstelegram.org/?read=3D13707>), the Dee=
+p
+   Space Network at 2.3 GHz and 8.4 GHz (ATel 13713
+   <http://www.astronomerstelegram.org/?read=3D13713>), and Northern Cross =
+at
+   408 MHz (ATel 13739 <http://www.astronomerstelegram.org/?read=3D13739>)
+   reported non-detections. A coordinated search for radio pulses at 1.4 GH=
+z
+   and 4.7 GHz with the Westerbork, Onsala, and Torun radio telescopes plac=
+ed
+   direct limits on radio pulses at the time of observed X-ray bursts (ATel
+   13735 <http://www.astronomerstelegram.org/?read=3D13735>).
+   - On 30 April, 2020 a second, fainter (60 mJy ms) radio burst was
+   detected by the FAST telescope (ATel 13699
+   <http://www.astronomerstelegram.org/?read=3D13699>), found to be up to 9=
+0%
+   linearly polarized with a rotation measure of +112.3 rad m^-2 (spectrum =
+and
+   polarization plots in ATel). Coincident X-ray upper limits were reported
+   from Insight-HXMT (ATel 13703
+   <http://www.astronomerstelegram.org/?read=3D13703>).
+   - Upper limits on contemporaneous neutrino signatures were reported by
+   IceCube (ATel 13689 <http://www.astronomerstelegram.org/?read=3D13689>)
+   and ANTARES (ATel 13721 <http://www.astronomerstelegram.org/?read=3D1372=
+1>
+   ).
+   - SRG/eROSITA observations show steady X-ray emission from the source on
+   23-24 April, before the reported X-ray bursts (ATel 13723
+   <http://www.astronomerstelegram.org/?read=3D13723>).
+   - A catalog of X-ray burst times from Swift/BAT is now available (ATel
+   13748 <http://www.astronomerstelegram.org/?read=3D13748>).
+   - Archival Arecibo radio telescope observations (ATel 13726
+   <http://www.astronomerstelegram.org/?read=3D13726>) following a 2019 X-r=
+ay
+   flare showed no radio pulses as bright as the current detections.
+
+Associated preprints
+
+   - A Bright Millisecond-duration Radio Burst from a Galactic Magnetar;
+   The CHIME/FRB Collaboration, arXiv: 2005.10324
+   <https://arxiv.org/abs/2005.10324>
+   - A Fast Radio Burst Associated with a Galactic Magnetar; Bochenek et
+   al., arXiv: 2005.10828 <https://arxiv.org/abs/2005.10828>
+   - INTEGRAL Discovery of a Burst Associated with Radio Emission from the
+   Magnetar SGR 1935+2154; Mereghetti et al., arXiv: 2005.06335
+   <https://arxiv.org/abs/2005.06335>
+   - Fast Radio Bursts from Reconnection Events in Magnetar Magnetospheres;
+   Lyutikov & Popov, arXiv: 2005.05093 <https://arxiv.org/abs/2005.05093>
+   - Implications of a =E2=80=9CFast Radio Burst=E2=80=9D from a Galactic M=
+agnetar;
+   Margalit et al., arXiv: 2005.05283 <https://arxiv.org/abs/2005.05283>
+   - A Unified Picture of Galactic and Cosmological Fast Radio Bursts; Lu,
+   Kumar & Zhang, arXiv: 2005.06736 <https://arxiv.org/abs/2005.06736>
+   - Revisiting the Distance, Environment and Supernova Properties of SNR
+   G57.2+08 that Hosts SGR 1935+2154; Ping Zhou et al., arXiv: 2005.03517
+   <https://arxiv.org/abs/2005.03517>
+
+Other papers of interest
+
+*Observational Results*
+
+   - A Fast Radio Burst Discovered in FAST Drift Scan Survey; Weiwei Zhu et
+   al., arXiv: 2004.14029 <https://arxiv.org/abs/2004.14029>
+   - Is GRB 110715A the Progenitor of FRB 171209?; Xiang-Gao Wang et al.,
+   arXiv: 2004.12050 <https://arxiv.org/abs/2004.12050>
+   - Electron Density Structure of the Local Galactic Disk; Ocker, Cordes &
+   Chatterjee, arXiv: 2004.11921 <https://arxiv.org/abs/2004.11921>
+   - A Comparative Study of Host Galaxy Properties Between Fast Radio
+   Bursts and Stellar Transients; Ye Li & Bing Zhang, arXiv: 2005.02371
+   <https://arxiv.org/abs/2005.02371>
+   - Zwicky Transient Factory Constraints on the Optical Emission from the
+   Nearby Repeating FRB 180916.J0158+65; Andreoni et al., arXiv: 2005.06273
+   <https://arxiv.org/abs/2005.06273>
+   - Bright X-ray and Radio Pulses from a Recently Reactivated Magnetar;
+   Pearlman et al., arXiv: 2005.08410 <https://arxiv.org/abs/2005.08410>
+
+   "We find that the radio pulses from XTE J1810-197 share similar
+   characteristics to radio bursts detected from fast radio burst (FRB)
+   sources, some of which are now thought to be produced by active magnetar=
+s."
+
+
+*Theory and Modeling*
+
+   - The Multiwavelength Counterparts of Fast Radio Bursts; Chen, Ravi &
+   Lu, arXiv: 2004.10787 <https://arxiv.org/abs/2004.10787>
+   - A Geometrical Explanation for Repeating Fast Radio Bursts; Shuang Du &
+   Renxin Xu, arXiv: 2004.11223 <https://arxiv.org/abs/2004.11223>
+   - Reconstruction of Reionization History through Dispersion Measure of
+   Fast Radio Bursts; Ji-Ping Dai & Jun-Qing Xia, arXiv: 2004.11276
+   <https://arxiv.org/abs/2004.11276>
+   - Persistent Radio Emission from Synchrotron Heating by a Repeating Fast
+   Radio Burst Source in a Nebula; Qiao-Chu Li, Yuan-Pei Yang, & Zi-Gao Dai=
+,
+   arXiv: 2004.12516 <https://arxiv.org/abs/2004.12516>
+   - A New Method to Measure Hubble Parameter H(z) Using Fast Radio Bursts;
+   Q. Wu, Hai Yu, & F. Y. Wang, arXiv: 2004.12649
+   <https://arxiv.org/abs/2004.12649>
+   - Cosmology with Gravitationally Lensed Fast Radio Bursts; Wucknitz,
+   Spitler & Pen, arXiv: 2004.11643 <https://arxiv.org/abs/2004.11643>
+   - Weak equivalence principle, swampland and H0 tension with fast single
+   radio bursts FRB 180924 and FRB 190523; Deng Wang, Zhaozhou Li, Jiajun
+   Zhang, arXiv: 1907.02838 <https://arxiv.org/abs/1907.02838>
+   - Cosmology-insensitive estimate of IGM baryon mass fraction from five
+   localized fast radio bursts; Zhengxiang Li et al., arXiv: 2004.08393
+   <https://arxiv.org/abs/2004.08393>
+   - On the Magnetospheric Origin of Repeating Fast Radio Bursts; Wei-Yang
+   Wang et al., arXiv: 2005.02100 <https://arxiv.org/abs/2005.02100>
+   - Repeating Fast Radio Bursts Caused by Small Bodies Orbiting a Pulsar
+   or Magnetar; Mottez, Zarka, & Voisin, arXiv: 2002.12834
+   <https://arxiv.org/abs/2002.12834>
+   - A Data-Driven Technique Using Millisecond Transients to Measure the
+   Milky Way Halo; Platts, Prochaska, & Law, arXiv: 2005.06256
+   <https://arxiv.org/abs/2005.06256>
+   - Constraining Dark Photon Dark Matter with Fast Radio Bursts; Landim,
+   arXiv: 2005.08621 <https://arxiv.org/abs/2005.08621>
+   - Detectability of Radio Afterglows from Fast Radio Bursts Produced by
+   Binary Neutron Star Mergers; Haoxiang Lin & Tomonori Totani, arXiv:
+   2005.08112 <https://arxiv.org/abs/2005.08112>
+   - Shock within a Shock: revisiting the radio flares of NS merger ejecta
+   and GRB-supernovae; Margalit & Piran, arXiv: 2004.13028
+   <https://arxiv.org/abs/2004.13028>
+   - Quark-Novae in the Outskirts of Galaxies: An Explanation of the Fast
+   Radio Burst Phenomenon; Ouyed, Leahy & Koning, arXiv: 2005.09793
+   <https://arxiv.org/abs/2005.09793>
+
+*Algorithms and Instrumentation*
+
+   - Gamma-ray Urgent Archiver for Novel Opportunities (GUANO): Swift/BAT
+   Event Data Dumps on Demand to Enable Sensitive Sub-threshold GRB Searche=
+s;
+   Tohuvavohu et al., arXiv: 2005.01751 <https://arxiv.org/abs/2005.01751>
+
+   "This pipeline has been successfully run in its complete form since
+   early 2020, and has resulted in the recovery of BAT event data for >700
+   externally triggered events to date (GWs, neutrinos, GRBs triggered by
+   other facilities, FRBs)"
+
+   - A GPU Spatial Processing System for CHIME; Denman et al., arXiv:
+   2005.09481 <https://arxiv.org/abs/2005.09481>
+
+From the Astronomer's Telegram
+
+   - FRB 200508 was found at UTMOST in real-time using an automated
+   GPU-accelerated/machine learning-based pipeline, with a DM of 629 pc/cc =
+and
+   a fluence of ~29.7 Jy-ms (ATel 13715
+   <http://www.astronomerstelegram.org/?read=3D13715>).
+
+Upcoming meetings and conferences
+
+*FRB2020*: The in-person conference has been cancelled and will instead be
+held remotely during the *week of 6 July, 2020*. The talk schedule will be
+significantly abridged and there will be sessions over multiple time zones.
+If you were originally scheduled for a talk at this meeting, please update
+your talk details at the following link
+<https://docs.google.com/forms/d/e/1FAIpQLScyjTojFjVsL-34iM6N5N9MyGAYscvv3B=
+sVUA0JmjLfYHPprg/viewfor>.
+A registration link for the virtual meeting will be forthcoming.
+
+*Compact Objects and Energetic Phenomena in the Multi-Messenger Era*: This
+meeting has been converted to a fully-virtual mini-conference on 14-15 July
+2020. The agenda and (free) registration is available at this event page
+<http://www.cvent.com/events/compact-objects-and-energetic-phenomena-in-the=
+-multi-messenger-era/event-summary-7d584037bafd41c58bad69072788dce7.aspx>
+.
+
+*We appreciate that many conferences are going virtual this year, making
+them accessible to a wider audience. If you would like to advertise your
+upcoming meeting in the FRB Newsletter, please let us know!*
+
+
+*Do you have an item for future newsletters? Please send these via email to
+the editors (Emily and Shami) to be included in an upcoming issue.*
+
+
+FRB Newsletter: 2019=E2=80=942020, produced by Emily Petroff and Shami Chat=
+terjee
+We acknowledge support from the Cornell library, the National Science
+Foundation (NSF), and the Netherlands Organization for Scientific Research
+(NWO).
+
+You are receiving this email because you subscribed to this newsletter. You
+can unsubscribe here <https://forms.gle/zJwx8MXHuoNdUJ5y5>.
+If you were forwarded this email and would like to subscribe you can subscr=
+ibe
+here <https://forms.gle/fFE8uQWfavWA48s5A>.
+We welcome your tips and suggestions by email.
+
+Archive of past newsletters with citable DOIs can be found here
+<http://frb.astro.cornell.edu/news/>.
+
+--000000000000124cc205a63eba99
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dutf-8"><d=
+iv dir=3D"ltr"><table border=3D"0" width=3D"600" cellpadding=3D"0" cellspac=
+ing=3D"0" class=3D"gmail-container" style=3D"border-spacing:0px;color:rgb(0=
+,0,0);font-family:Times;font-size:medium;width:600px;max-width:600px"><tbod=
+y><tr><td class=3D"gmail-container-padding gmail-header" align=3D"left" sty=
+le=3D"border-collapse:collapse;font-family:Helvetica,Arial,sans-serif;font-=
+size:20px;font-weight:bold;padding-bottom:0px;color:rgb(3,107,252);padding-=
+left:24px;padding-right:24px">FRB Newsletter Issue 09 =E2=80=94 May 2020</t=
+d></tr><tr><td class=3D"gmail-title" align=3D"right" style=3D"border-collap=
+se:collapse;font-family:Helvetica,Arial,sans-serif;font-size:14px;font-weig=
+ht:bold;padding-bottom:0px;color:rgb(51,51,51);padding-left:24px;padding-ri=
+ght:24px"><br>Total FRB count: 122<br>Repeaters: 21</td></tr><tr><td class=
+=3D"gmail-container-padding gmail-content" align=3D"left" style=3D"border-c=
+ollapse:collapse;padding:12px 24px 6px"><br><div class=3D"gmail-title" styl=
+e=3D"font-family:Helvetica,Arial,sans-serif;font-size:18px;font-weight:600;=
+color:rgb(55,69,80)">From the editors:</div><br><div class=3D"gmail-body-te=
+xt" style=3D"font-family:Helvetica,Arial,sans-serif;font-size:14px;line-hei=
+ght:20px;color:rgb(51,51,51)">The news this month has been dominated by the=
+ burst of activity related to the Galactic magnetar SGR 1935&#43;2154. The =
+detection of radio bursts from the source suggests a link between magnetars=
+ and (possibly some subset of) the extragalactic FRB phenomenon. While most=
+ of the observational results are yet to be published, we summarize the rel=
+evant rapid communications and the theoretical interpretations that have be=
+en put forward so far. We hope you enjoy this unusually busy issue of the n=
+ewsletter during these trying times.<br><br></div><div class=3D"gmail-title=
+" style=3D"font-family:Helvetica,Arial,sans-serif;font-size:18px;font-weigh=
+t:600;color:rgb(55,69,80)">A burst of activity from SGR 1935&#43;2154</div>=
+<br><div class=3D"gmail-body-text" style=3D"font-family:Helvetica,Arial,san=
+s-serif;font-size:14px;line-height:20px;color:rgb(51,51,51)"><ul type=3D"di=
+sc"><li style=3D"margin-bottom:10px">On 27 April, 2020 a =E2=80=9Cforest of=
+ X-ray bursts=E2=80=9D was detected from the Galactic soft gamma repeater S=
+GR 1935&#43;2154 by the Swift BAT (ATel&nbsp;<a href=3D"http://www.astronom=
+erstelegram.org/?read=3D13675">13675</a>), NICER (ATel&nbsp;<a href=3D"http=
+://www.astronomerstelegram.org/?read=3D13678">13678</a>), and AGILE (ATel&n=
+bsp;<a href=3D"http://www.astronomerstelegram.org/?read=3D13682">13682</a>)=
+. This activity was quickly followed up by Swift monitoring (ATel&nbsp;<a h=
+ref=3D"http://www.astronomerstelegram.org/?read=3D13679">13679</a>).</li><l=
+i style=3D"margin-bottom:10px">On 28 April, 2020 a bright millisecond radio=
+ burst was detected from this source by both the CHIME telescope (ATel&nbsp=
+;<a href=3D"http://www.astronomerstelegram.org/?read=3D13681">13681</a>) an=
+d by STARE2 (ATel&nbsp;<a href=3D"http://www.astronomerstelegram.org/?read=
+=3D13684">13684</a>), with a DM of ~333 pc/cc and estimated radio fluences =
+of a few kJy ms (CHIME, 400-800 MHz) and 1.5 MJy ms (STARE2, 1.4 GHz).<ul t=
+ype=3D"circle"><li style=3D"margin-bottom:10px">Bochenek et al. (ATel&nbsp;=
+<a href=3D"http://www.astronomerstelegram.org/?read=3D13684">13684</a>) sta=
+te that if &quot;<i>... the source were placed at the distance of FRB 18091=
+6.J0158&#43;65 (149 Mpc), the fluence of this burst would be &gt;7 mJy ms. =
+We conclude that active magnetars are a source of FRBs at extragalactic dis=
+tances.</i>&quot;</li><li style=3D"margin-bottom:10px">The double-peaked CH=
+IME dynamic spectrum is&nbsp;<a href=3D"https://storage.googleapis.com/chim=
+efrb-dev.appspot.com/SGR1935&#43;2154/SGR1935&#43;2154.png">available to vi=
+ew</a>.</li><li style=3D"margin-bottom:10px">Two preprints reporting on thi=
+s radio burst have just been released; see below.</li></ul></li><li style=
+=3D"margin-bottom:10px">An X-ray flare temporally coincident with the CHIME=
+/STARE2 radio burst was reported by INTEGRAL (ATel&nbsp;<a href=3D"http://w=
+ww.astronomerstelegram.org/?read=3D13685">13685</a>), AGILE (ATel&nbsp;<a h=
+ref=3D"http://www.astronomerstelegram.org/?read=3D13686">13686</a>), Insigh=
+t-HXMT (ATel&nbsp;<a href=3D"http://www.astronomerstelegram.org/?read=3D136=
+87">13687</a>, ATel&nbsp;<a href=3D"http://www.astronomerstelegram.org/?rea=
+d=3D13692">13692</a>, ATel&nbsp;<a href=3D"http://www.astronomerstelegram.o=
+rg/?read=3D13696">13696</a>, ATel&nbsp;<a href=3D"http://www.astronomerstel=
+egram.org/?read=3D13704">13704</a>), and Konus-Wind (ATel&nbsp;<a href=3D"h=
+ttp://www.astronomerstelegram.org/?read=3D13688">13688</a>).</li><li style=
+=3D"margin-bottom:10px">Upper limits on persistent radio emission have been=
+ established with the VLA (ATel&nbsp;<a href=3D"http://www.astronomersteleg=
+ram.org/?read=3D13690">13690</a>, ATel&nbsp;<a href=3D"http://www.astronome=
+rstelegram.org/?read=3D13693">13693</a>), and searches for radio pulses wit=
+h commensal realfast observations at the VLA, FAST at 1.25 GHz (ATel&nbsp;<=
+a href=3D"http://www.astronomerstelegram.org/?read=3D13697">13697</a>), LOF=
+AR at 150 MHz (ATel&nbsp;<a href=3D"http://www.astronomerstelegram.org/?rea=
+d=3D13707">13707</a>), the Deep Space Network at 2.3 GHz and 8.4 GHz (ATel&=
+nbsp;<a href=3D"http://www.astronomerstelegram.org/?read=3D13713">13713</a>=
+), and Northern Cross at 408 MHz (ATel&nbsp;<a href=3D"http://www.astronome=
+rstelegram.org/?read=3D13739">13739</a>) reported non-detections. A coordin=
+ated search for radio pulses at 1.4 GHz and 4.7 GHz with the Westerbork, On=
+sala, and Torun radio telescopes placed direct limits on radio pulses at th=
+e time of observed X-ray bursts (ATel&nbsp;<a href=3D"http://www.astronomer=
+stelegram.org/?read=3D13735">13735</a>).</li><li style=3D"margin-bottom:10p=
+x">On 30 April, 2020 a second, fainter (60 mJy ms) radio burst was detected=
+ by the FAST telescope (ATel&nbsp;<a href=3D"http://www.astronomerstelegram=
+.org/?read=3D13699">13699</a>), found to be up to 90% linearly polarized wi=
+th a rotation measure of &#43;112.3 rad m^-2 (spectrum and polarization plo=
+ts in ATel). Coincident X-ray upper limits were reported from Insight-HXMT =
+(ATel&nbsp;<a href=3D"http://www.astronomerstelegram.org/?read=3D13703">137=
+03</a>).</li><li style=3D"margin-bottom:10px">Upper limits on contemporaneo=
+us neutrino signatures were reported by IceCube (ATel&nbsp;<a href=3D"http:=
+//www.astronomerstelegram.org/?read=3D13689">13689</a>) and ANTARES (ATel&n=
+bsp;<a href=3D"http://www.astronomerstelegram.org/?read=3D13721">13721</a>)=
+.</li><li style=3D"margin-bottom:10px">SRG/eROSITA observations show steady=
+ X-ray emission from the source on 23-24 April, before the reported X-ray b=
+ursts (ATel&nbsp;<a href=3D"http://www.astronomerstelegram.org/?read=3D1372=
+3">13723</a>).</li><li style=3D"margin-bottom:10px">A catalog of X-ray burs=
+t times from Swift/BAT is now available (ATel&nbsp;<a href=3D"http://www.as=
+tronomerstelegram.org/?read=3D13748">13748</a>).</li><li style=3D"margin-bo=
+ttom:10px">Archival Arecibo radio telescope observations (ATel&nbsp;<a href=
+=3D"http://www.astronomerstelegram.org/?read=3D13726">13726</a>) following =
+a 2019 X-ray flare showed no radio pulses as bright as the current detectio=
+ns.</li></ul>Associated preprints<ul type=3D"disc"><li style=3D"margin-bott=
+om:10px">A Bright Millisecond-duration Radio Burst from a Galactic Magnetar=
+; The CHIME/FRB Collaboration, arXiv:&nbsp;<a href=3D"https://arxiv.org/abs=
+/2005.10324">2005.10324</a></li><li style=3D"margin-bottom:10px">A Fast Rad=
+io Burst Associated with a Galactic Magnetar; Bochenek et al., arXiv:&nbsp;=
+<a href=3D"https://arxiv.org/abs/2005.10828">2005.10828</a></li><li style=
+=3D"margin-bottom:10px">INTEGRAL Discovery of a Burst Associated with Radio=
+ Emission from the Magnetar SGR 1935&#43;2154; Mereghetti et al., arXiv:&nb=
+sp;<a href=3D"https://arxiv.org/abs/2005.06335">2005.06335</a></li><li styl=
+e=3D"margin-bottom:10px">Fast Radio Bursts from Reconnection Events in Magn=
+etar Magnetospheres; Lyutikov &amp; Popov, arXiv:&nbsp;<a href=3D"https://a=
+rxiv.org/abs/2005.05093">2005.05093</a></li><li style=3D"margin-bottom:10px=
+">Implications of a =E2=80=9CFast Radio Burst=E2=80=9D from a Galactic Magn=
+etar; Margalit et al., arXiv:&nbsp;<a href=3D"https://arxiv.org/abs/2005.05=
+283">2005.05283</a></li><li style=3D"margin-bottom:10px">A Unified Picture =
+of Galactic and Cosmological Fast Radio Bursts; Lu, Kumar &amp; Zhang, arXi=
+v:&nbsp;<a href=3D"https://arxiv.org/abs/2005.06736">2005.06736</a></li><li=
+ style=3D"margin-bottom:10px">Revisiting the Distance, Environment and Supe=
+rnova Properties of SNR G57.2&#43;08 that Hosts SGR 1935&#43;2154; Ping Zho=
+u et al., arXiv:&nbsp;<a href=3D"https://arxiv.org/abs/2005.03517">2005.035=
+17</a></li></ul></div><div class=3D"gmail-title" style=3D"font-family:Helve=
+tica,Arial,sans-serif;font-size:18px;font-weight:600;color:rgb(55,69,80)">O=
+ther papers of interest</div><br><div class=3D"gmail-body-text" style=3D"fo=
+nt-family:Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;color:=
+rgb(51,51,51)"><i>Observational Results</i><ul type=3D"disc"><li style=3D"m=
+argin-bottom:10px">A Fast Radio Burst Discovered in FAST Drift Scan Survey;=
+ Weiwei Zhu et al., arXiv:&nbsp;<a href=3D"https://arxiv.org/abs/2004.14029=
+">2004.14029</a></li><li style=3D"margin-bottom:10px">Is GRB 110715A the Pr=
+ogenitor of FRB 171209?; Xiang-Gao Wang et al., arXiv:&nbsp;<a href=3D"http=
+s://arxiv.org/abs/2004.12050">2004.12050</a></li><li style=3D"margin-bottom=
+:10px">Electron Density Structure of the Local Galactic Disk; Ocker, Cordes=
+ &amp; Chatterjee, arXiv:&nbsp;<a href=3D"https://arxiv.org/abs/2004.11921"=
+>2004.11921</a></li><li style=3D"margin-bottom:10px">A Comparative Study of=
+ Host Galaxy Properties Between Fast Radio Bursts and Stellar Transients; Y=
+e Li &amp; Bing Zhang, arXiv:&nbsp;<a href=3D"https://arxiv.org/abs/2005.02=
+371">2005.02371</a></li><li style=3D"margin-bottom:10px">Zwicky Transient F=
+actory Constraints on the Optical Emission from the Nearby Repeating FRB 18=
+0916.J0158&#43;65; Andreoni et al., arXiv:&nbsp;<a href=3D"https://arxiv.or=
+g/abs/2005.06273">2005.06273</a></li><li style=3D"margin-bottom:10px">Brigh=
+t X-ray and Radio Pulses from a Recently Reactivated Magnetar; Pearlman et =
+al., arXiv:&nbsp;<a href=3D"https://arxiv.org/abs/2005.08410">2005.08410</a=
+><blockquote><p>&quot;We find that the radio pulses from XTE J1810-197 shar=
+e similar characteristics to radio bursts detected from fast radio burst (F=
+RB) sources, some of which are now thought to be produced by active magneta=
+rs.&quot;</p></blockquote></li></ul><i>Theory and Modeling</i><ul type=3D"d=
+isc"><li style=3D"margin-bottom:10px">The Multiwavelength Counterparts of F=
+ast Radio Bursts; Chen, Ravi &amp; Lu, arXiv:&nbsp;<a href=3D"https://arxiv=
+.org/abs/2004.10787">2004.10787</a></li><li style=3D"margin-bottom:10px">A =
+Geometrical Explanation for Repeating Fast Radio Bursts; Shuang Du &amp; Re=
+nxin Xu, arXiv:&nbsp;<a href=3D"https://arxiv.org/abs/2004.11223">2004.1122=
+3</a></li><li style=3D"margin-bottom:10px">Reconstruction of Reionization H=
+istory through Dispersion Measure of Fast Radio Bursts; Ji-Ping Dai &amp; J=
+un-Qing Xia, arXiv:&nbsp;<a href=3D"https://arxiv.org/abs/2004.11276">2004.=
+11276</a></li><li style=3D"margin-bottom:10px">Persistent Radio Emission fr=
+om Synchrotron Heating by a Repeating Fast Radio Burst Source in a Nebula; =
+Qiao-Chu Li, Yuan-Pei Yang, &amp; Zi-Gao Dai, arXiv:&nbsp;<a href=3D"https:=
+//arxiv.org/abs/2004.12516">2004.12516</a></li><li style=3D"margin-bottom:1=
+0px">A New Method to Measure Hubble Parameter H(z) Using Fast Radio Bursts;=
+ Q. Wu, Hai Yu, &amp; F. Y. Wang, arXiv:&nbsp;<a href=3D"https://arxiv.org/=
+abs/2004.12649">2004.12649</a></li><li style=3D"margin-bottom:10px">Cosmolo=
+gy with Gravitationally Lensed Fast Radio Bursts; Wucknitz, Spitler &amp; P=
+en, arXiv:&nbsp;<a href=3D"https://arxiv.org/abs/2004.11643">2004.11643</a>=
+</li><li style=3D"margin-bottom:10px">Weak equivalence principle, swampland=
+ and H0 tension with fast single radio bursts FRB 180924 and FRB 190523; De=
+ng Wang, Zhaozhou Li, Jiajun Zhang, arXiv:&nbsp;<a href=3D"https://arxiv.or=
+g/abs/1907.02838">1907.02838</a></li><li style=3D"margin-bottom:10px">Cosmo=
+logy-insensitive estimate of IGM baryon mass fraction from five localized f=
+ast radio bursts; Zhengxiang Li et al., arXiv:&nbsp;<a href=3D"https://arxi=
+v.org/abs/2004.08393">2004.08393</a></li><li style=3D"margin-bottom:10px">O=
+n the Magnetospheric Origin of Repeating Fast Radio Bursts; Wei-Yang Wang e=
+t al., arXiv:&nbsp;<a href=3D"https://arxiv.org/abs/2005.02100">2005.02100<=
+/a></li><li style=3D"margin-bottom:10px">Repeating Fast Radio Bursts Caused=
+ by Small Bodies Orbiting a Pulsar or Magnetar; Mottez, Zarka, &amp; Voisin=
+, arXiv:&nbsp;<a href=3D"https://arxiv.org/abs/2002.12834">2002.12834</a></=
+li><li style=3D"margin-bottom:10px">A Data-Driven Technique Using Milliseco=
+nd Transients to Measure the Milky Way Halo; Platts, Prochaska, &amp; Law, =
+arXiv:&nbsp;<a href=3D"https://arxiv.org/abs/2005.06256">2005.06256</a></li=
+><li style=3D"margin-bottom:10px">Constraining Dark Photon Dark Matter with=
+ Fast Radio Bursts; Landim, arXiv:&nbsp;<a href=3D"https://arxiv.org/abs/20=
+05.08621">2005.08621</a></li><li style=3D"margin-bottom:10px">Detectability=
+ of Radio Afterglows from Fast Radio Bursts Produced by Binary Neutron Star=
+ Mergers; Haoxiang Lin &amp; Tomonori Totani, arXiv:&nbsp;<a href=3D"https:=
+//arxiv.org/abs/2005.08112">2005.08112</a></li><li style=3D"margin-bottom:1=
+0px">Shock within a Shock: revisiting the radio flares of NS merger ejecta =
+and GRB-supernovae; Margalit &amp; Piran, arXiv:&nbsp;<a href=3D"https://ar=
+xiv.org/abs/2004.13028">2004.13028</a></li><li style=3D"margin-bottom:10px"=
+>Quark-Novae in the Outskirts of Galaxies: An Explanation of the Fast Radio=
+ Burst Phenomenon; Ouyed, Leahy &amp; Koning, arXiv:&nbsp;<a href=3D"https:=
+//arxiv.org/abs/2005.09793">2005.09793</a></li></ul><i>Algorithms and Instr=
+umentation</i><ul type=3D"disc"><li style=3D"margin-bottom:10px">Gamma-ray =
+Urgent Archiver for Novel Opportunities (GUANO): Swift/BAT Event Data Dumps=
+ on Demand to Enable Sensitive Sub-threshold GRB Searches; Tohuvavohu et al=
+., arXiv:&nbsp;<a href=3D"https://arxiv.org/abs/2005.01751">2005.01751</a><=
+blockquote><p>&quot;This pipeline has been successfully run in its complete=
+ form since early 2020, and has resulted in the recovery of BAT event data =
+for &gt;700 externally triggered events to date (GWs, neutrinos, GRBs trigg=
+ered by other facilities, FRBs)&quot;</p></blockquote></li><li style=3D"mar=
+gin-bottom:10px">A GPU Spatial Processing System for CHIME; Denman et al., =
+arXiv:&nbsp;<a href=3D"https://arxiv.org/abs/2005.09481">2005.09481</a></li=
+></ul></div><div class=3D"gmail-title" style=3D"font-family:Helvetica,Arial=
+,sans-serif;font-size:18px;font-weight:600;color:rgb(55,69,80)">From the As=
+tronomer's Telegram</div><div class=3D"gmail-body-text" style=3D"font-famil=
+y:Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;color:rgb(51,5=
+1,51)"><ul type=3D"disc"><li style=3D"margin-bottom:10px">FRB 200508 was fo=
+und at UTMOST in real-time using an automated GPU-accelerated/machine learn=
+ing-based pipeline, with a DM of 629 pc/cc and a fluence of ~29.7 Jy-ms (AT=
+el&nbsp;<a href=3D"http://www.astronomerstelegram.org/?read=3D13715">13715<=
+/a>).</li></ul></div><div class=3D"gmail-title" style=3D"font-family:Helvet=
+ica,Arial,sans-serif;font-size:18px;font-weight:600;color:rgb(55,69,80)">Up=
+coming meetings and conferences</div><br><div class=3D"gmail-body-text" sty=
+le=3D"font-family:Helvetica,Arial,sans-serif;font-size:14px;line-height:20p=
+x;color:rgb(51,51,51)"><i>FRB2020</i>: The in-person conference has been ca=
+ncelled and will instead be held remotely during the&nbsp;<b>week of 6 July=
+, 2020</b>. The talk schedule will be significantly abridged and there will=
+ be sessions over multiple time zones. If you were originally scheduled for=
+ a talk at this meeting, please update your talk details at the following&n=
+bsp;<a href=3D"https://docs.google.com/forms/d/e/1FAIpQLScyjTojFjVsL-34iM6N=
+5N9MyGAYscvv3BsVUA0JmjLfYHPprg/viewfor">link</a>. A registration link for t=
+he virtual meeting will be forthcoming.<br><br><i>Compact Objects and Energ=
+etic Phenomena in the Multi-Messenger Era</i>: This meeting has been conver=
+ted to a fully-virtual mini-conference on 14-15 July 2020. The agenda and (=
+free) registration is available&nbsp;<a href=3D"http://www.cvent.com/events=
+/compact-objects-and-energetic-phenomena-in-the-multi-messenger-era/event-s=
+ummary-7d584037bafd41c58bad69072788dce7.aspx">at this event page</a>.<br><b=
+r><i>We appreciate that many conferences are going virtual this year, makin=
+g them accessible to a wider audience. If you would like to advertise your =
+upcoming meeting in the FRB Newsletter, please let us know!</i></div><br><b=
+r><i>Do you have an item for future newsletters? Please send these via emai=
+l to the editors (Emily and Shami) to be included in an upcoming issue.</i>=
+</td></tr><tr><td class=3D"gmail-container-padding gmail-footer-text" align=
+=3D"left" style=3D"border-collapse:collapse;font-family:Helvetica,Arial,san=
+s-serif;font-size:12px;line-height:16px;color:rgb(170,170,170);padding-left=
+:24px;padding-right:24px"><br><br>FRB Newsletter: 2019=E2=80=942020, produc=
+ed by Emily Petroff and Shami Chatterjee<br>We acknowledge support from the=
+ Cornell library, the National Science Foundation (NSF), and the Netherland=
+s Organization for Scientific Research (NWO).<br><br>You are receiving this=
+ email because you subscribed to this newsletter. You can&nbsp;<a href=3D"h=
+ttps://forms.gle/zJwx8MXHuoNdUJ5y5" style=3D"color:rgb(170,170,170)">unsubs=
+cribe here</a>.<br>If you were forwarded this email and would like to subsc=
+ribe you can&nbsp;<a href=3D"https://forms.gle/fFE8uQWfavWA48s5A" style=3D"=
+color:rgb(170,170,170)">subscribe here</a>.<br>We welcome your tips and sug=
+gestions by email.<br><br>Archive of past newsletters with citable DOIs can=
+ be found&nbsp;<a href=3D"http://frb.astro.cornell.edu/news/">here</a>.<br>=
+</td></tr></tbody></table></div>
+
+--000000000000124cc205a63eba99--

@@ -1,6 +1,3 @@
-#Ignore the files within the folder /Information
-/Information
-
 #Ignore any unneeded python files
 .ipynb_checkpoints
 __pycache__
