@@ -1,5 +1,10 @@
 # Description of Petrosianfuncs Folder
 
+## TODO
+- setup unittest in testfunctions.ipynb
+- test comsology.py and ktau.py
+- finish writing README.md files
+
 ## Cosmology
 
 ### Cosmological Model & Other Constants

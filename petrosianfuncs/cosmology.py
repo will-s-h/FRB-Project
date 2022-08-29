@@ -10,10 +10,45 @@ cosm_model = [0.286, 0.714, 0.049, 70]
 #Omega_M (matter), Omega_Lambda (dark energy), Omega_b (baryons), H_0 (Hubble constant, in km/s/Mpc)
 
 #define constants
-c = 299792458.0
+c = 299792458.0 #speed of light, in m/s
 H_0 = cosm_model[3]*3.24077929e-20 #convert km/s/Mpc to s^-1
 Jyms = 1.0e-29 #1 Jy ms = 1.0e-29 J/(m^2 * Hz)
 Gyr = 3.1556926e16 #number of seconds in 10^9 years
+m_p = 1.6726219e-27 #mass of a proton, in kg
+G = 6.67408e-11 #universal gravitational constant in SI units. This value is kept for legacy reasons, recent measurement indicates 6.67430e-11
+
+def update_cmodel(val, i):
+    '''
+    ----------I/O-----------
+    INPUT: 
+    val - value of cosmological parameter
+    i - index of cosm_model to update with val
+    
+    OUTPUT: N/A
+    ------------------------
+    
+    Notes:
+    Updating i = 3 updates the constant H_0 as well
+    '''
+    if type(i) is not int or i < 0 or i > 3:
+        print(f"Cannot update index {i} of cosm_model. i should be 0, 1, 2, or 3.")
+        return
+    
+    cosm_model[i] = val
+    if i == 3: #update H_0 as well
+        H_0 = cosm_model[3]*3.24077929e-20
+
+def print_cmodel():
+    '''
+    ----------I/O-----------
+    INPUT: N/A
+    OUTPUT: N/A
+    ------------------------
+    
+    Notes:
+    Prints out the cosm_model list
+    '''
+    print(cosm_model)
 
 #####################################################
 #####################################################
@@ -135,9 +170,9 @@ def dDMdz_Arcus(z):
     Three separate sections, corresponding to presence/lack of H or He.
     '''
     
-    C = 3*(c*H_0)*(cosm_model[2])/(8*np.pi*6.67408e-11*1.6726219e-27) # SI units
+    C = 3*(c*H_0)*(cosm_model[2])/(8*np.pi*G*m_p) # SI units
     convert = 3.08567758e22 #1 pc cm^-3 in SI units
-    fac = 0.75*np.piecewise(z, [z<8, z>=8], [1, 0]) + 0.125*np.piecewise(z, [z<2.5, z>=2.5], [1, 0])
+    fac = 0.75*np.piecewise(z, [z<=8, z>8], [1, 0]) + 0.125*np.piecewise(z, [z<=2.5, z>2.5], [1, 0])
     return (C/convert)*(1+z)*fac/E(z)
 
 def dDMdz_Zhang(z):
@@ -151,7 +186,7 @@ def dDMdz_Zhang(z):
     One smooth peak with maximum at z<1.
     '''
     
-    C = 3*(299792458)*(cosm_model[3]*3.24077929e-20)*(cosm_model[2])/(8*np.pi*6.67408e-11*1.6726219e-27)
+    C = 3*(299792458)*(cosm_model[3]*3.24077929e-20)*(cosm_model[2])/(8*np.pi*G*m_p)
     C *= (7./8.)*0.84
     convert = 3.08567758e22
     return (1+z)*(C/convert)/E(z)
