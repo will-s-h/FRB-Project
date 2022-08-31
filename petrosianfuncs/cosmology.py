@@ -240,7 +240,7 @@ def z_DM(DM: Union[float, np.ndarray], func: Union[str, Callable[[float], float]
     '''
     
     if fast:
-        #TODO: 
+        #TODO: #2 add fast implementation using precomputed array and simple linear interpolation
         return 0
     
     invfunc = z_DM_Arcus
@@ -284,6 +284,7 @@ def reset_used() -> None:
     global used
     used = {}
 
+#### NOT TESTED
 def z_E(E_i: Union[float, np.ndarray], F: float, alpha: float) -> Union[float, np.ndarray]:
     '''
     WARNING: may have issues if E(z) is non-monatonic 
