@@ -204,7 +204,8 @@ def z_DM_single(DM: float, DMs: Union[list, np.ndarray], zs: Union[list, np.ndar
     #if not exactly equal to one of data points, linearly interpolate
     return zs[i-1] + (zs[i]-zs[i-1])*(DM-DMs[i-1])/(DMs[i]-DMs[i-1])
 
-def z_DM(DM_i: Union[float, np.ndarray], DMs: Union[list, np.ndarray], zs: Union[list, np.ndarray], E_setting: bool = False) -> Union[float, np.ndarray]:
+#VERSION 1
+def z_DM_V1(DM_i: Union[float, np.ndarray], DMs: Union[list, np.ndarray], zs: Union[list, np.ndarray], E_setting: bool = False) -> Union[float, np.ndarray]:
     '''
     ------------------------
     INPUT: 
@@ -232,7 +233,8 @@ def z_DM(DM_i: Union[float, np.ndarray], DMs: Union[list, np.ndarray], zs: Union
 ############# ENERGY #############
 ##################################
 
-def z_E(E_i, Es, zs):
+#VERSION 1
+def z_E_V1(E_i, Es, zs):
     '''
     WARNING: may have issues if E(z) is non-monatonic 
     

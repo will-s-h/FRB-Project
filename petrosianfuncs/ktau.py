@@ -2,6 +2,8 @@
 import pandas as pd  
 from cosmology import *
 
+print("hi")
+
 #####################################################
 #####################################################
 ################### g FUNCTIONS #####################
@@ -280,3 +282,5 @@ def phi_E(Es, z, Flim, func=z_E, g=g, k=0, params=[1.5], model=[E_Emodel, z_Emod
         phis.append(phi_i)
         
     return np.array(phis), np.array(E_primes), np.array(Es_raw)
+
+print("done")
