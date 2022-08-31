@@ -1,5 +1,7 @@
 # Description of Petrosianfuncs Folder
 
+Warning: this file isn't rendered correctly on GitHub. View using VSCode with the Markdown Preview extension, or some other Markdown preview software with KaTeX support.
+
 ## TODO
 - setup unittest in testfunctions.ipynb
 - test comsology.py and ktau.py

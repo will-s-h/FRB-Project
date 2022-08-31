@@ -68,6 +68,7 @@ def update_cmodel(new_model: Union[List[float], np.ndarray]) -> None:
 #####################################################
 #####################################################
 
+#VERSION 2
 def sort_by_first(list1: Union[list, np.ndarray], list2: Union[list, np.ndarray]) -> Tuple[np.ndarray, np.ndarray]:
     '''
     ------------------------
@@ -79,7 +80,7 @@ def sort_by_first(list1: Union[list, np.ndarray], list2: Union[list, np.ndarray]
     sorted_pairs = sorted(zipped_lists, key=lambda x:x[0]) #sort by first element, sort in place if first element equal
 
     tuples = zip(*sorted_pairs)
-    list1, list2 = [ list(tuplee) for tuplee in  tuples]
+    list1, list2 = [list(tuplee) for tuplee in  tuples]
     return np.array(list1), np.array(list2)
 
 from scipy import integrate
@@ -107,7 +108,7 @@ def integrate_mult_ends(func: Callable[[Union[float, np.ndarray]], Union[float, 
     integrals = np.zeros(len(end))
     
     integral = 0
-    curx = 0
+    curx = begin
     for i, xi in enumerate(sortx):
         integral += integrate.quad(func, curx, xi)[0]
         integrals[inds[i]] = integral
@@ -134,6 +135,7 @@ def E(z: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
     
     return ((1+z)**3 * O_M + O_L)**0.5
 
+#VERSION 3
 def D_C(z: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
     '''
     ------------------------
@@ -182,7 +184,7 @@ def dDMdz_Arcus(z: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
     fac = 0.75*np.piecewise(z, [z<=8, z>8], [1, 0]) + 0.125*np.piecewise(z, [z<=2.5, z>2.5], [1, 0])
     return (1+z)*(C/pccm3_to_m2)*fac/E(z)
 
-def dDMdz_Zhang(z):
+def dDMdz_Zhang(z: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
     '''
     ------------------------
     INPUT: z — redshift (single value or np array)
@@ -197,36 +199,9 @@ def dDMdz_Zhang(z):
     C *= (7./8.)*0.84
     return (1+z)*(C/pccm3_to_m2)/E(z)
 
-def DM_single_z(z, dDMdz=dDMdz_Arcus):
+#VERSION 2
+def DM(z: Union[float, np.ndarray], dDMdz: Callable[[Union[float, np.ndarray]], Union[float, np.ndarray]] = dDMdz_Arcus) -> Union[float, np.ndarray]:
     '''
-    ------------------------
-    INPUT: 
-    z     — redshift (single value)
-    dDMdz — dDM/dz model used, default Arcus
-    
-    OUTPUT: 
-    DM(z), single value of DM at redshift=z
-    ------------------------
-    
-    Notes:
-    z must be >= 0
-    dz = 0.001 by default, no parameter to change
-    '''
-    
-    if(z < 0):
-        print('z out of range')
-        return 0
-    
-    dz = 0.001
-    DM = 0.0
-    for z_ in np.arange(0, z, dz):
-        DM += (dDMdz(z_) + dDMdz(z_+dz))*dz/2.0
-    return DM
-    
-
-def DM(z, dDMdz=dDMdz_Arcus):
-    '''
-    (deprecated warning): input order is NOT same as output order
     ------------------------
     INPUT: 
     z     — single value or array/list of redshift
@@ -237,31 +212,9 @@ def DM(z, dDMdz=dDMdz_Arcus):
     ------------------------
     
     Notes:
-    all values of z must be >= 0
-    dz = 0.001 by default, no parameter to change
+    Uses scipy.integrate.quad
     '''
-    
-    if not isinstance(z, np.ndarray):
-        return DM_single_z(z, dDMdz)
-    
-    if(min(z) < 0):
-        print('z out of range')
-        return z*0
-    
-    indices = np.arange(0, len(z))
-    z_s, indices = sort_by_first(z, indices)
-    ind = 0
-    DMs = np.array([])
-    
-    dz = 0.001
-    DM = 0.0
-    for z_ in np.arange(0, max(z)+2*dz, dz):
-        DM += (dDMdz(z_) + dDMdz(z_+dz))*dz/2.0
-        while(ind < len(z_s) and abs(z_s[ind]-z_) < dz):
-            DMs = np.append(DMs, DM)
-            ind += 1
-    indices, DMs = sort_by_first(indices, DMs)
-    return DMs
+    return integrate_mult_ends(dDMdz, 0, z)
 
 #####################################################
 #####################################################
@@ -269,70 +222,41 @@ def DM(z, dDMdz=dDMdz_Arcus):
 #####################################################
 #####################################################
 
-from bisect import bisect_left as bleft
-#behavior:
-# if exactly at an element, returns that index
-# if between two elements, returns index of right hand element
-# if beyond range, returns right hand index (0 or len(arr))
+from pynverse import inversefunc
+z_DM_Arcus = inversefunc(lambda z: DM(z, dDMdz=dDMdz_Arcus))
+z_DM_Zhang = inversefunc(lambda z: DM(z, dDMdz=dDMdz_Zhang))
+import warnings as w
 
-from bisect import bisect_right as bright
-#behavior:
-#if exactly at an element, returns index+1
-#if between two elements, returns right hand index
-# if beyond range, returns right hand index (0 or len(arr))
-
-
-def z_DM_single(DM, DMs, zs, E_setting=False): #assumes DMs and zs already sorted
+def z_DM(DM: Union[float, np.ndarray], func: Union[str, Callable[[float], float]] = "Arcus", fast: bool = False) -> Union[float, np.ndarray]:
     '''
     ------------------------
-    INPUT: 
-    DM - a single value
-    DMs - a pre-calculated & sorted list of DMs
-    zs - a pre-calculated & sorted list of zs, that align one-to-one with DMs
-    E_setting - True means returning inf if DM > max(DMs); default is False
+    INPUT:
+    DM - single value or array of DMs (pc cm^-3)
+    func - string or callable function 
     
-    OUTPUT: 
-    zs - linearly interpolated z that correspond with the input DM
+    OUTPUT:
+    zs - single value or array of zs, corresponding to DMs
     ------------------------
     '''
-    if E_setting and DM > max(DMs):
-        return np.inf
     
-    if(DM > max(DMs) or DM < min(DMs)):
-        print(('E' if E_setting else 'DM') + 'out of range: ' + str(DM) + (' J/Hz' if E_setting else ' pc cm^-3'))
+    if fast:
+        #TODO: 
         return 0
     
-    i = bleft(DMs, DM)
+    invfunc = z_DM_Arcus
     
-    if (i != bright(DMs, DM)): #means that DM is exactly within DMs
-        return zs[i]
+    if func == "Arcus":
+        invfunc = z_DM_Arcus
+    elif func == "Zhang":
+        invfunc = z_DM_Zhang
+    else:
+        invfunc = inversefunc(func)
     
-    #if not exactly equal to one of data points, linearly interpolate
-    return zs[i-1] + (zs[i]-zs[i-1])*(DM-DMs[i-1])/(DMs[i]-DMs[i-1])
-
-def z_DM(DM_i, DMs, zs, E_setting=False):
-    '''
-    ------------------------
-    INPUT: 
-    DM_i - a single value or np.array of DMs
-    DMs - a pre-calculated & sorted list of DMs
-    zs - a pre-calculated & sorted list of zs, that align one-to-one with DMs
-    E_setting - True means returning inf if DM > max(DMs); default is False
-    
-    OUTPUT: 
-    zs - linearly interpolated list of zs that correspond with the input DM
-    ------------------------
-    '''
-    
-    if type(DM_i) != np.ndarray:
-        return z_DM_single(DM_i, DMs, zs, E_setting=E_setting)
-    
-    z_f = np.zeros(len(DM_i))
-    
-    for i, DM in enumerate(DM_i):
-        z_f[i] = z_DM_single(DM, DMs, zs, E_setting=E_setting)
-    
-    return z_f
+    with w.catch_warnings():
+        w.simplefilter("ignore") #ignore np.bool warning
+        if type(DM) != np.ndarray:
+            return float(invfunc(DM))
+        return invfunc(DM)
 
 #####################################################
 #####################################################
@@ -340,11 +264,8 @@ def z_DM(DM_i, DMs, zs, E_setting=False):
 #####################################################
 #####################################################
 
-
-def E_v(Fs, z, alpha):
+def E_v(Fs: Union[float, np.ndarray], z: Union[float, np.ndarray], alpha: float) -> Union[float, np.ndarray]:
     '''
-    (deprecated warning): input order is NOT same as output order
-    
     ------------------------
     INPUT: 
     Fs - fluence, in Jy ms
@@ -357,7 +278,13 @@ def E_v(Fs, z, alpha):
     '''
     return Fs*4*np.pi*(D_L(z)*c/H_0)**2*JYMS/((1+z)**(2-alpha))
 
-def z_E(E_i, Es, zs):
+used: Dict[float, Callable[[Union[float, np.ndarray]], np.ndarray]] = {}
+
+def reset_used() -> None:
+    global used
+    used = {}
+
+def z_E(E_i: Union[float, np.ndarray], F: float, alpha: float) -> Union[float, np.ndarray]:
     '''
     WARNING: may have issues if E(z) is non-monatonic 
     
@@ -371,4 +298,16 @@ def z_E(E_i, Es, zs):
     zs - linearly interpolated list of zs that correspond with the input E
     ------------------------
     '''
-    return z_DM(E_i, Es, zs, E_setting=True)
+    
+    f: Callable
+    
+    if round(alpha, 7) in used:
+        f = used[round(alpha, 7)]
+    else:
+        f = inversefunc(lambda x: E_v(F, x, round(alpha, 7))/F)
+        used[round(alpha, 7)] = f
+    
+    if type(E_i) != np.ndarray:
+        return float(f(E_i))
+    
+    return f(E_i)
