@@ -160,7 +160,9 @@ def DM_V1(z: Union[float, np.ndarray], dDMdz: Callable[[Union[float, np.ndarray]
     indices, DMs = sort_by_first(indices, DMs)
     return DMs
 
-### INVERSE FUNCTIONS ###
+##################################
+####### INVERSE FUNCTIONS ########
+##################################
 
 from bisect import bisect_left as bleft
 #behavior:
@@ -226,7 +228,9 @@ def z_DM(DM_i: Union[float, np.ndarray], DMs: Union[list, np.ndarray], zs: Union
     
     return z_f
 
-##### ENERGY #####
+##################################
+############# ENERGY #############
+##################################
 
 def z_E(E_i, Es, zs):
     '''
