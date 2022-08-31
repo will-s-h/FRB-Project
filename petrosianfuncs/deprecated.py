@@ -44,3 +44,40 @@ def D_C_old(z: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
         integral += integrand*dz
     indices, D_Cs = sort_by_first(indices, D_Cs)
     return D_Cs
+
+def D_L_temp(z: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+    '''
+    Used to be that D_L had an option to pass a bool into the function:
+    temp - boolean indicating to use approximate analytic expression (temporary measure)  
+    
+    temp expression only a good approximation for z<3, but good for testing.
+    '''
+    return 1.56391885121*(z**1.2290110356)
+
+def D_C_V2(z: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+    '''
+    THIS FUNCTION IS DEPRECATED. See D_C(z) for the new standard.
+    ------------------------
+    INPUT: z — redshift (single value or np array)
+    OUTPUT: comoving distance, in units of hubble distances (c/H_0)
+    ------------------------
+    
+    Notes:
+    Uses default scipy.integrate.quad. Typically very low error values.
+    '''
+    if not isinstance(z, np.ndarray):
+        return integrate.quad(lambda x: 1/E(x), 0, z)[0]
+    
+    ins = np.arange(0, len(z))
+    sortz, ins = sort_by_first(z, ins)
+    Ds = np.zeros(len(sortz))
+    
+    integral = 0
+    curz = 0
+    for i, zi in enumerate(sortz):
+        ans = integrate.quad(lambda x: 1/E(x), curz, zi)[0]
+        integral += ans
+        curz = zi
+        Ds[ins[i]] = integral
+    
+    return Ds

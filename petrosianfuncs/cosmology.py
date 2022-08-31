@@ -12,6 +12,7 @@ kmsMpc_to_s: Final[float] = 3.24077929e-20 #convert km/s/Mpc to s^-1
 JYMS: Final[float] = 1.0e-29 #1 Jy ms = 1.0e-29 J/(m^2 * Hz)
 M_P: Final[float] = 1.6726219e-27 #mass of a proton, in kg
 G: Final[float] = 6.67408e-11 #universal gravitational constant in SI units. This value is kept for legacy reasons, recent measurement indicates 6.67430e-11
+pccm3_to_m2: Final[float] = 3.08567758e22 #convert pc cm^-3 to m^-2
 #GYR: Final[float] = 3.1556926e16 #number of seconds in 10^9 years, deprecated
 
 #####################################################
@@ -20,9 +21,10 @@ G: Final[float] = 6.67408e-11 #universal gravitational constant in SI units. Thi
 #####################################################
 #####################################################
 
-cosm_model = [0.286, 0.714, 0.049, 70] #Omega_M (matter), Omega_Lambda (dark energy), Omega_b (baryons), H_0 (Hubble constant, in km/s/Mpc)
+cosm_model: list[float] = [0.286, 0.714, 0.049, 70] #Omega_M (matter), Omega_Lambda (dark energy), Omega_b (baryons), H_0 (Hubble constant, in km/s/Mpc)
+O_M: float; O_L: float; O_B: float
 O_M, O_L, O_B = cosm_model[0], cosm_model[1], cosm_model[2] #Omega_M, Omega_Lambda, and Omega_b
-H_0 = cosm_model[3]*kmsMpc_to_s #convert km/s/Mpc to s^-1
+H_0: float = cosm_model[3]*kmsMpc_to_s #convert km/s/Mpc to s^-1
 
 def set_default() -> None:
     '''
@@ -42,11 +44,8 @@ def set_default() -> None:
 def update_cmodel(new_model: Union[List[float], np.ndarray]) -> None:
     '''
     ------------------------
-    INPUT: 
-    new_model - new cosmological model parameters (list or np.ndarray)
-    
-    OUTPUT: 
-    N/A
+    INPUT: new_model - new cosmological model parameters (list or np.ndarray)
+    OUTPUT: N/A
     ------------------------
     
     Notes:
@@ -62,6 +61,59 @@ def update_cmodel(new_model: Union[List[float], np.ndarray]) -> None:
     cosm_model = new_model[:]
     O_M, O_L, O_B = cosm_model[0], cosm_model[1], cosm_model[2]
     H_0 = cosm_model[3]*kmsMpc_to_s
+
+#####################################################
+#####################################################
+################# HELPER FUNCTIONS ##################
+#####################################################
+#####################################################
+
+def sort_by_first(list1: Union[list, np.ndarray], list2: Union[list, np.ndarray]) -> Tuple[np.ndarray, np.ndarray]:
+    '''
+    ------------------------
+    INPUT: list1, list2 (two lists/np arrays)
+    OUTPUT: list1, list2 (numpy arrays) sorted in increasing order of list1
+    ------------------------
+    '''
+    zipped_lists = zip(list1, list2)
+    sorted_pairs = sorted(zipped_lists, key=lambda x:x[0]) #sort by first element, sort in place if first element equal
+
+    tuples = zip(*sorted_pairs)
+    list1, list2 = [ list(tuplee) for tuplee in  tuples]
+    return np.array(list1), np.array(list2)
+
+from scipy import integrate
+
+def integrate_mult_ends(func: Callable[[Union[float, np.ndarray]], Union[float, np.ndarray]], begin: float, end: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+    '''
+    ------------------------
+    INPUT: 
+    func — function to integrate
+    begin - begin value (single value)
+    end - end value (single value or np.ndarray)
+    
+    OUTPUT: 
+    Values of definite integrals from begin to end value(s), using scipy.integrate.quad.
+    ------------------------
+    
+    Notes:
+    Runs in roughly O(N log N), where N is the number of end values.
+    '''
+    if type(end) is not np.ndarray:
+        return integrate.quad(func, begin, end)[0]
+    
+    inds = np.arange(0, len(end))
+    sortx, inds = sort_by_first(end, inds)
+    integrals = np.zeros(len(end))
+    
+    integral = 0
+    curx = 0
+    for i, xi in enumerate(sortx):
+        integral += integrate.quad(func, curx, xi)[0]
+        integrals[inds[i]] = integral
+        curx = xi
+    
+    return integrals
 
 #####################################################
 #####################################################
@@ -82,22 +134,6 @@ def E(z: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
     
     return ((1+z)**3 * O_M + O_L)**0.5
 
-def sort_by_first(list1: Union[list, np.ndarray], list2: Union[list, np.ndarray]) -> Tuple[np.ndarray, np.ndarray]:
-    '''
-    ------------------------
-    INPUT: list1, list2 (two lists/np arrays)
-    OUTPUT: list1, list2 (numpy arrays) sorted in increasing order of list1
-    ------------------------
-    '''
-    zipped_lists = zip(list1, list2)
-    sorted_pairs = sorted(zipped_lists, key=lambda x:x[0]) #sort by first element, sort in place if first element equal
-
-    tuples = zip(*sorted_pairs)
-    list1, list2 = [ list(tuplee) for tuplee in  tuples]
-    return np.array(list1), np.array(list2)
-
-from scipy import integrate
-
 def D_C(z: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
     '''
     ------------------------
@@ -108,44 +144,20 @@ def D_C(z: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
     Notes:
     Uses default scipy.integrate.quad. Typically very low error values.
     '''
-    if not isinstance(z, np.ndarray):
-        return integrate.quad(lambda x: 1/E(x), 0, z)[0]
     
-    ins = np.arange(0, len(z))
-    sortz, ins = sort_by_first(z, ins)
-    Ds = np.zeros(len(sortz))
+    return integrate_mult_ends(lambda x: 1/E(x), 0, z)
     
-    integral = 0
-    curz = 0
-    for i, zi in enumerate(sortz):
-        ans = integrate.quad(lambda x: 1/E(x), curz, zi)[0]
-        integral += ans
-        curz = zi
-        Ds[ins[i]] = integral
-    
-    return Ds
-    
-def D_L(z: Union[float, np.ndarray], temp: bool = False) -> Union[float, np.ndarray]:
+def D_L(z: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
     '''
-    (fixed): input order is NOT same as output order
-    
     ------------------------
-    INPUT: 
-    z — redshift (single value or np array)
-    temp - boolean indicating to use approximate analytic expression (temporary measure)  
-    
+    INPUT: z — redshift (single value or np array)
     OUTPUT: luminosity distance, in units of hubble distances (c/H_0)
     ------------------------
     
     Notes:
     Uses default scipy.integrate.quad. Typically very low error values.
-    temp expression only a good approximation for z<3, but good for testing.
     '''
-    
-    if temp: #temporary measure
-        return 1.56391885121*(z**1.2290110356)
     return (1+z)*D_C(z)
-
 
 #####################################################
 #####################################################
@@ -155,7 +167,7 @@ def D_L(z: Union[float, np.ndarray], temp: bool = False) -> Union[float, np.ndar
 
 #note: Arcus and Zhang also differ by a multiplicative constant
 
-def dDMdz_Arcus(z): 
+def dDMdz_Arcus(z: Union[float, np.ndarray]) -> Union[float, np.ndarray]: 
     '''
     ------------------------
     INPUT: z — redshift (single value or np array)
@@ -167,9 +179,8 @@ def dDMdz_Arcus(z):
     '''
     
     C = 3*c*H_0*O_B/(8*np.pi*G*M_P) # SI units
-    convert = 3.08567758e22 #1 pc cm^-3 in SI units
     fac = 0.75*np.piecewise(z, [z<=8, z>8], [1, 0]) + 0.125*np.piecewise(z, [z<=2.5, z>2.5], [1, 0])
-    return (C/convert)*(1+z)*fac/E(z)
+    return (1+z)*(C/pccm3_to_m2)*fac/E(z)
 
 def dDMdz_Zhang(z):
     '''
@@ -184,8 +195,7 @@ def dDMdz_Zhang(z):
     
     C = 3*c*H_0*O_B/(8*np.pi*G*M_P)
     C *= (7./8.)*0.84
-    convert = 3.08567758e22
-    return (1+z)*(C/convert)/E(z)
+    return (1+z)*(C/pccm3_to_m2)/E(z)
 
 def DM_single_z(z, dDMdz=dDMdz_Arcus):
     '''
