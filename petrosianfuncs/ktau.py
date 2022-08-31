@@ -1,6 +1,7 @@
 #import numpy as np # --> already imported by cosmology
 import pandas as pd  
 from cosmology import *
+import deprecated_cosmology as d
 
 print("hi")
 
@@ -10,7 +11,7 @@ print("hi")
 #####################################################
 #####################################################
 
-def g(z, k):
+def g(z: Union[float, np.ndarray], k: float) -> Union[float, np.ndarray]:
     '''
     ----------I/O-----------
     INPUT: 
@@ -25,14 +26,14 @@ def g(z, k):
     '''
     return (1+z)**k
 
-def g_new(z, k):
+def g_new(z: Union[float, np.ndarray], k: float) -> Union[float, np.ndarray]:
     '''
     ----------I/O-----------
     INPUT: 
     z — redshift (single value or np array)
     k — power (float)
     
-    OUTPUT: g(z,k), the value of the 'transform' function (no official name for it)
+    OUTPUT: g_new(z,k), the value of the 'transform' function (no official name for it)
     ------------------------
     
     Notes:
@@ -48,7 +49,7 @@ def g_new(z, k):
 #####################################################
 #####################################################
 
-def ktau(Es, z, Flim, func=E_v, g=g, k=0, params=[1.5], diag=False):
+def ktau(Es: np.ndarray, z: np.ndarray, Flim: float, func: Callable = E_v, g:float = g, k: float = 0, params: List[float]=[1.5], diag: bool = False):
     '''
     ----------I/O-----------
     INPUT: 
@@ -180,7 +181,7 @@ def ktau_E(Es, Elims, z, g=g, k=0):
 
 #####################################################
 #####################################################
-################ analysis funcs #####################
+################## ANALYSIS FUNCS ###################
 #####################################################
 #####################################################
 
@@ -239,7 +240,7 @@ def sigma_z(Es, z, Flim, func=E_v, g=g, k=0, params=[1.5]): #z0 being the z of i
 z_Emodel = np.linspace(0, 3, 10000)
 E_Emodel = E_v(2.0, z_Emodel, alpha=1.5)
 
-def phi_E(Es, z, Flim, func=z_E, g=g, k=0, params=[1.5], model=[E_Emodel, z_Emodel]):
+def phi_E(Es, z, Flim, func=d.z_E_V1, g=g, k=0, params=[1.5], model=[E_Emodel, z_Emodel]):
     #Note: we assume that Es, z are clean already (i.e. no points under the cutoff)
     #no need to be sorted, already sorted within this function
     
