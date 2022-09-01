@@ -1,4 +1,10 @@
-from cosmology import *
+import numpy as np
+from typing import *
+from scipy import integrate
+
+from cosmology import sort_by_first
+from cosmology import E
+from cosmology import dDMdz_Arcus
 
 ##################################
 ############ DISTANCES ###########
@@ -248,4 +254,4 @@ def z_E_V1(E_i, Es, zs):
     zs - linearly interpolated list of zs that correspond with the input E
     ------------------------
     '''
-    return z_DM(E_i, Es, zs, E_setting=True)
+    return z_DM_V1(E_i, Es, zs, E_setting=True)

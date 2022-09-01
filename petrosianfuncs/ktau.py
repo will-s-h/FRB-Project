@@ -3,8 +3,6 @@ import pandas as pd
 from cosmology import *
 import deprecated_cosmology as d
 
-print("hi")
-
 #####################################################
 #####################################################
 ################### g FUNCTIONS #####################
@@ -49,7 +47,7 @@ def g_new(z: Union[float, np.ndarray], k: float) -> Union[float, np.ndarray]:
 #####################################################
 #####################################################
 
-def ktau(Es: np.ndarray, z: np.ndarray, Flim: float, func: Callable = E_v, g:float = g, k: float = 0, params: List[float]=[1.5], diag: bool = False):
+def ktau(Es: np.ndarray, z: np.ndarray, Flim: float, func: Callable = E_v, g: Callable = g, k: float = 0, params: List[float]=[1.5], diag: bool = False) -> Union[float, pd.DataFrame]:
     '''
     ----------I/O-----------
     INPUT: 
