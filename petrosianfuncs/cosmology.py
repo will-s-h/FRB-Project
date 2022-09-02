@@ -255,8 +255,8 @@ def z_DM(DM: Union[float, np.ndarray], func: Union[str, Callable[[float], float]
     with w.catch_warnings():
         w.simplefilter("ignore") #ignore np.bool warning
         if type(DM) != np.ndarray:
-            return float(invfunc(DM))
-        return invfunc(DM)
+            return float(invfunc(max(DM, 0)))
+        return invfunc(np.maximum(DM, np.zeros(len(DM))))
 
 #####################################################
 #####################################################
