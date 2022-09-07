@@ -223,9 +223,14 @@ def DM(z: Union[float, np.ndarray], dDMdz: Callable[[Union[float, np.ndarray]], 
 #####################################################
 
 from pynverse import inversefunc
-z_DM_Arcus = inversefunc(lambda z: DM(z, dDMdz=dDMdz_Arcus))
-z_DM_Zhang = inversefunc(lambda z: DM(z, dDMdz=dDMdz_Zhang))
+_z_DM_Arcus = inversefunc(lambda z: DM(z, dDMdz=dDMdz_Arcus))
+_z_DM_Zhang = inversefunc(lambda z: DM(z, dDMdz=dDMdz_Zhang))
 import warnings as w
+
+from deprecated_cosmology import z_DM_V1 #circular import, should be okay
+_z = np.linspace(0, 6000, 2000)
+_DM_Arcus = DM(_z)
+_DM_Zhang = DM(_z, dDMdz=dDMdz_Zhang)
 
 def z_DM(DM: Union[float, np.ndarray], func: Union[str, Callable[[float], float]] = "Arcus", fast: bool = False) -> Union[float, np.ndarray]:
     '''
@@ -241,14 +246,18 @@ def z_DM(DM: Union[float, np.ndarray], func: Union[str, Callable[[float], float]
     
     if fast:
         #TODO: #2 add fast implementation using precomputed array and simple linear interpolation
-        return 0
+        if func != "Arcus" and func != "Zhang":
+            print("unknown function. defaulting to slow z_DM().")
+        else:
+            _DM = _DM_Arcus if func == "Arcus" else _DM_Zhang
+            return z_DM_V1(DM, _DM, _z)
     
-    invfunc = z_DM_Arcus
+    invfunc = _z_DM_Arcus
     
     if func == "Arcus":
-        invfunc = z_DM_Arcus
+        invfunc = _z_DM_Arcus
     elif func == "Zhang":
-        invfunc = z_DM_Zhang
+        invfunc = _z_DM_Zhang
     else:
         invfunc = inversefunc(func)
     

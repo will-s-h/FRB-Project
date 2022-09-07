@@ -2,6 +2,12 @@ import numpy as np
 from typing import *
 from scipy import integrate
 
+##################################
+######## CIRCULAR IMPORTS ########
+##################################
+
+# should be okay
+
 from cosmology import sort_by_first
 from cosmology import E
 from cosmology import dDMdz_Arcus
@@ -199,7 +205,7 @@ def z_DM_single(DM: float, DMs: Union[list, np.ndarray], zs: Union[list, np.ndar
         return np.inf
     
     if(DM > max(DMs) or DM < min(DMs)):
-        print(('E' if E_setting else 'DM') + 'out of range: ' + str(DM) + (' J/Hz' if E_setting else ' pc cm^-3'))
+        print(('E' if E_setting else 'DM') + ' out of range: ' + str(DM) + (' J/Hz' if E_setting else ' pc cm^-3'))
         return 0
     
     i = bleft(DMs, DM)
