@@ -7,12 +7,12 @@ from typing import *
 #####################################################
 #####################################################
 
-c: Final[float] = 299792458.0 #speed of light, in m/s
-kmsMpc_to_s: Final[float] = 3.24077929e-20 #convert km/s/Mpc to s^-1
+C: Final[float] = 299792458.0 #speed of light, in m/s
+KMSMPC_TO_S: Final[float] = 3.24077929e-20 #convert km/s/Mpc to s^-1
 JYMS: Final[float] = 1.0e-29 #1 Jy ms = 1.0e-29 J/(m^2 * Hz)
 M_P: Final[float] = 1.6726219e-27 #mass of a proton, in kg
 G: Final[float] = 6.67408e-11 #universal gravitational constant in SI units. This value is kept for legacy reasons, recent measurement indicates 6.67430e-11
-pccm3_to_m2: Final[float] = 3.08567758e22 #convert pc cm^-3 to m^-2
+PCCM3_TO_M2: Final[float] = 3.08567758e22 #convert pc cm^-3 to m^-2
 #GYR: Final[float] = 3.1556926e16 #number of seconds in 10^9 years, deprecated
 
 #####################################################
@@ -21,10 +21,10 @@ pccm3_to_m2: Final[float] = 3.08567758e22 #convert pc cm^-3 to m^-2
 #####################################################
 #####################################################
 
-cosm_model: list[float] = [0.286, 0.714, 0.049, 70] #Omega_M (matter), Omega_Lambda (dark energy), Omega_b (baryons), H_0 (Hubble constant, in km/s/Mpc)
+COSM_MODEL: list[float] = [0.286, 0.714, 0.049, 70] #Omega_M (matter), Omega_Lambda (dark energy), Omega_b (baryons), H_0 (Hubble constant, in km/s/Mpc)
 O_M: float; O_L: float; O_B: float
-O_M, O_L, O_B = cosm_model[0], cosm_model[1], cosm_model[2] #Omega_M, Omega_Lambda, and Omega_b
-H_0: float = cosm_model[3]*kmsMpc_to_s #convert km/s/Mpc to s^-1
+O_M, O_L, O_B = COSM_MODEL[0], COSM_MODEL[1], COSM_MODEL[2] #Omega_M, Omega_Lambda, and Omega_b
+H_0: float = COSM_MODEL[3]*KMSMPC_TO_S #convert km/s/Mpc to s^-1
 
 def set_default() -> None:
     '''
@@ -34,12 +34,12 @@ def set_default() -> None:
     ------------------------
     
     Notes:
-    Sets cosm_model, O_M, O_L, O_B, and H_0 to default values.
+    Sets COSM_MODEL, O_M, O_L, O_B, and H_0 to default values.
     '''
-    global cosm_model, H_0, O_M, O_L, O_B
-    cosm_model = [0.286, 0.714, 0.049, 70]
-    O_M, O_L, O_B = cosm_model[0], cosm_model[1], cosm_model[2]
-    H_0 = cosm_model[3]*kmsMpc_to_s
+    global COSM_MODEL, H_0, O_M, O_L, O_B
+    COSM_MODEL = [0.286, 0.714, 0.049, 70]
+    O_M, O_L, O_B = COSM_MODEL[0], COSM_MODEL[1], COSM_MODEL[2]
+    H_0 = COSM_MODEL[3]*KMSMPC_TO_S
 
 def update_cmodel(new_model: Union[List[float], np.ndarray]) -> None:
     '''
@@ -49,18 +49,18 @@ def update_cmodel(new_model: Union[List[float], np.ndarray]) -> None:
     ------------------------
     
     Notes:
-    This function updates cosm_model, O_M, O_L, O_B, and H_0.
+    This function updates COSM_MODEL, O_M, O_L, O_B, and H_0.
     '''
     if type(new_model) is not np.ndarray and type(new_model) is not list:
-        raise TypeError("Type not compatible with cosm_model. Update failed.")
+        raise TypeError("Type not compatible with COSM_MODEL. Update failed.")
     
     if len(new_model) != 4:
-        raise ValueError("Length of list or np array is incompatible with cosm_model. Update failed.")
+        raise ValueError("Length of list or np array is incompatible with COSM_MODEL. Update failed.")
     
-    global cosm_model, H_0, O_M, O_L, O_B
-    cosm_model = new_model[:]
-    O_M, O_L, O_B = cosm_model[0], cosm_model[1], cosm_model[2]
-    H_0 = cosm_model[3]*kmsMpc_to_s
+    global COSM_MODEL, H_0, O_M, O_L, O_B
+    COSM_MODEL = new_model[:] #makes new copy with [:]
+    O_M, O_L, O_B = COSM_MODEL[0], COSM_MODEL[1], COSM_MODEL[2]
+    H_0 = COSM_MODEL[3]*KMSMPC_TO_S
 
 #####################################################
 #####################################################
@@ -180,9 +180,9 @@ def dDMdz_Arcus(z: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
     Three separate sections, corresponding to presence/lack of H or He.
     '''
     
-    C = 3*c*H_0*O_B/(8*np.pi*G*M_P) # SI units
+    const = 3*C*H_0*O_B/(8*np.pi*G*M_P) # SI units
     fac = 0.75*np.piecewise(z, [z<=8, z>8], [1, 0]) + 0.125*np.piecewise(z, [z<=2.5, z>2.5], [1, 0])
-    return (1+z)*(C/pccm3_to_m2)*fac/E(z)
+    return (1+z)*(const/PCCM3_TO_M2)*fac/E(z)
 
 def dDMdz_Zhang(z: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
     '''
@@ -195,9 +195,8 @@ def dDMdz_Zhang(z: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
     One smooth peak with maximum at z<1.
     '''
     
-    C = 3*c*H_0*O_B/(8*np.pi*G*M_P)
-    C *= (7./8.)*0.84
-    return (1+z)*(C/pccm3_to_m2)/E(z)
+    const = 3*C*H_0*O_B/(8*np.pi*G*M_P) * 7/8 * 0.84
+    return (1+z)*(const/PCCM3_TO_M2)/E(z)
 
 #VERSION 2
 def DM(z: Union[float, np.ndarray], dDMdz: Callable[[Union[float, np.ndarray]], Union[float, np.ndarray]] = dDMdz_Arcus) -> Union[float, np.ndarray]:
@@ -282,16 +281,16 @@ def E_v(Fs: Union[float, np.ndarray], z: Union[float, np.ndarray], alpha: float)
     alpha - spectral index (F_v is proportional to v^-a)
     
     OUTPUT: 
-    F_v (single val/list) corresponding with E, at z
+    F_v (single val/list) corresponding with E (in J/Hz), at z
     ------------------------
     '''
-    return Fs*4*np.pi*(D_L(z)*c/H_0)**2*JYMS/((1+z)**(2-alpha))
+    return Fs*4*np.pi*(D_L(z)*C/H_0)**2*JYMS/((1+z)**(2-alpha))
 
-used: Dict[float, Callable[[Union[float, np.ndarray]], np.ndarray]] = {}
+_used: Dict[float, Callable[[Union[float, np.ndarray]], np.ndarray]] = {}
 
 def reset_used() -> None:
-    global used
-    used = {}
+    global _used
+    _used = {}
 
 #### NOT TESTED
 def z_E(E_i: Union[float, np.ndarray], F: float, alpha: float) -> Union[float, np.ndarray]:
@@ -309,13 +308,13 @@ def z_E(E_i: Union[float, np.ndarray], F: float, alpha: float) -> Union[float, n
     ------------------------
     '''
     
-    f: Callable
+    f: Callable[[Union[float, np.ndarray]], float]
     
-    if round(alpha, 7) in used:
-        f = used[round(alpha, 7)]
+    if round(alpha, 7) in _used:
+        f = _used[round(alpha, 7)]
     else:
         f = inversefunc(lambda x: E_v(F, x, round(alpha, 7))/F)
-        used[round(alpha, 7)] = f
+        _used[round(alpha, 7)] = f
     
     if type(E_i) != np.ndarray:
         return float(f(E_i))
