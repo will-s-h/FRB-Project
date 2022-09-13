@@ -1,3 +1,5 @@
+# module for functions related to the kendall tau statistic
+
 import numpy as np
 import cosmology as c
 from typing import *

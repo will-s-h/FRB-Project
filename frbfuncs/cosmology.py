@@ -1,3 +1,5 @@
+# module for functions related to cosmology and cosmological models
+
 import numpy as np
 from typing import *
 
@@ -21,7 +23,7 @@ PCCM3_TO_M2: Final[float] = 3.08567758e22 #convert pc cm^-3 to m^-2
 #####################################################
 #####################################################
 
-COSM_MODEL: list[float] = [0.286, 0.714, 0.049, 70] #Omega_M (matter), Omega_Lambda (dark energy), Omega_b (baryons), H_0 (Hubble constant, in km/s/Mpc)
+COSM_MODEL: List[float] = [0.286, 0.714, 0.049, 70] #Omega_M (matter), Omega_Lambda (dark energy), Omega_b (baryons), H_0 (Hubble constant, in km/s/Mpc)
 O_M: float; O_L: float; O_B: float
 O_M, O_L, O_B = COSM_MODEL[0], COSM_MODEL[1], COSM_MODEL[2] #Omega_M, Omega_Lambda, and Omega_b
 H_0: float = COSM_MODEL[3]*KMSMPC_TO_S #convert km/s/Mpc to s^-1
@@ -199,7 +201,7 @@ def dDMdz_Zhang(z: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
     return (1+z)*(const/PCCM3_TO_M2)/E(z)
 
 #VERSION 2
-def DM(z: Union[float, np.ndarray], dDMdz: Callable[[Union[float, np.ndarray]], Union[float, np.ndarray]] = dDMdz_Arcus) -> Union[float, np.ndarray]:
+def DM(z: Union[float, np.ndarray], dDMdz: Callable[[Union[float, np.ndarray]], Union[float, np.ndarray]] = dDMdz_Zhang) -> Union[float, np.ndarray]:
     '''
     ------------------------
     INPUT: 
@@ -211,7 +213,7 @@ def DM(z: Union[float, np.ndarray], dDMdz: Callable[[Union[float, np.ndarray]], 
     ------------------------
     
     Notes:
-    Uses scipy.integrate.quad
+    Uses scipy.integrate.quad. Default has now changed to DM_Zhang, due to faster runtime and accuracy of inverse.
     '''
     return integrate_mult_ends(dDMdz, 0, z)
 
@@ -222,16 +224,40 @@ def DM(z: Union[float, np.ndarray], dDMdz: Callable[[Union[float, np.ndarray]], 
 #####################################################
 
 from pynverse import inversefunc
-_z_DM_Arcus = inversefunc(lambda z: DM(z, dDMdz=dDMdz_Arcus))
-_z_DM_Zhang = inversefunc(lambda z: DM(z, dDMdz=dDMdz_Zhang))
+_z_DM_Arcus: Callable = inversefunc(lambda z: DM(z, dDMdz=dDMdz_Arcus), domain=[0,8])
+_z_DM_Zhang: Callable = inversefunc(lambda z: DM(z, dDMdz=dDMdz_Zhang))
 import warnings as w
 
 from deprecated_cosmology import z_DM_V1 #circular import, should be okay
-_z = np.linspace(0, 6000, 2000)
-_DM_Arcus = DM(_z)
-_DM_Zhang = DM(_z, dDMdz=dDMdz_Zhang)
+_z_low: float = 0.
+_z_high: float = 8.
+_num_z: int = 2000
+_z: np.ndarray = np.linspace(_z_low, _z_high, _num_z)
+_DM_Arcus: np.ndarray = DM(_z, dDMdz=dDMdz_Arcus)
+_DM_Zhang: np.ndarray = DM(_z, dDMdz=dDMdz_Zhang)
 
-def z_DM(DM: Union[float, np.ndarray], func: Union[str, Callable[[float], float]] = "Arcus", fast: bool = False) -> Union[float, np.ndarray]:
+def set_fast_DM(z_low: float = 0., z_high: float = 8., num_z: int = 2000) -> None:
+    '''
+    Precomputes DM arrays for later use in the fast z_DM version. Only precomputes Arcus and Zhang models.
+    ------------------------
+    INPUT:
+    DM_low - single value indicating lower end of DM range
+    DM_high - single value indicating upper end of DM range
+    num_DM - single value indicating number of data points calculated between DM_low and DM_high
+    
+    OUTPUT:
+    N/A
+    ------------------------
+    '''
+    
+    global _z_low, _z_high, _num_z, _z, _DM_Arcus, _DM_Zhang
+    _z_low, _z_high, _num_z = z_low, z_high, num_z
+    _z = np.linspace(_z_low, _z_high, _num_z)
+    _DM_Arcus = DM(_z, dDMdz=dDMdz_Arcus)
+    _DM_Zhang = DM(_z, dDMdz=dDMdz_Zhang)
+
+
+def z_DM(DM: Union[float, np.ndarray], func: Union[str, Callable[[float], float]] = "Zhang", fast: bool = False) -> Union[float, np.ndarray]:
     '''
     ------------------------
     INPUT:
@@ -241,6 +267,9 @@ def z_DM(DM: Union[float, np.ndarray], func: Union[str, Callable[[float], float]
     OUTPUT:
     zs - single value or array of zs, corresponding to DMs
     ------------------------
+    
+    Notes:
+    Changed default to Zhang due to accuracy of inverse.
     '''
     
     if fast:
@@ -251,7 +280,7 @@ def z_DM(DM: Union[float, np.ndarray], func: Union[str, Callable[[float], float]
             _DM = _DM_Arcus if func == "Arcus" else _DM_Zhang
             return z_DM_V1(DM, _DM, _z)
     
-    invfunc = _z_DM_Arcus
+    invfunc: Callable
     
     if func == "Arcus":
         invfunc = _z_DM_Arcus
@@ -281,7 +310,7 @@ def E_v(Fs: Union[float, np.ndarray], z: Union[float, np.ndarray], alpha: float)
     alpha - spectral index (F_v is proportional to v^-a)
     
     OUTPUT: 
-    F_v (single val/list) corresponding with E (in J/Hz), at z
+    Energy at a frequency E_v (in J/Hz) (single val/list) corresponding with fluence, at z
     ------------------------
     '''
     return Fs*4*np.pi*(D_L(z)*C/H_0)**2*JYMS/((1+z)**(2-alpha))
@@ -289,6 +318,9 @@ def E_v(Fs: Union[float, np.ndarray], z: Union[float, np.ndarray], alpha: float)
 _used: Dict[float, Callable[[Union[float, np.ndarray]], np.ndarray]] = {}
 
 def reset_used() -> None:
+    '''
+    Clears dictionary of inverse functions for E_v(z).
+    '''
     global _used
     _used = {}
 
