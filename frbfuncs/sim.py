@@ -60,7 +60,7 @@ def get_expected(l: np.ndarray, r: np.ndarray, a: float, b: float, power: float,
 ##### REALISTIC FRB SAMPLING #####
 ##################################
 
-def frb_sample(zparams: List[float] = [-1.0, 1.0], Lparams: List[float] =[1e23, 1e26, -1.2], size: int = 200, seed: int = 0, pdSeries: Union[None, pd.Series] = None):
+def frb_sample(zparams: List[float] = [0.9, 0.6], Lparams: List[float] =[1e23, 1e26, -2], size: int = 200, seed: int = 0, pdSeries: Union[None, pd.Series] = None):
     '''
     Generates an FRB sample with lognormal redshift distribution and power law luminosity distribution,
     without a luminosity evolution.
@@ -68,8 +68,8 @@ def frb_sample(zparams: List[float] = [-1.0, 1.0], Lparams: List[float] =[1e23, 
     ------------
     INPUT:
     ------------
-    zparams: [mean, sigma] for lognormal z distribution (default = [-1.0, 1.0]).
-    Lparams: [initial min, initial max, power for power law] for L distribution (default = [1e23, 1e26, -1.2]).
+    zparams: [mean, sigma] for lognormal z distribution (default = [0.9, 0.6]).
+    Lparams: [initial min, initial max, power for power law] for L distribution (default = [1e23, 1e26, -2]).
     size: size of sample (default = 200).
     seed: random seed put into numpy (default = 0).
     pdSeries: can use a pandas Series to specify parameters (default = None).
