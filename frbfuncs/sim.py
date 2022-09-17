@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 from typing import *
+import cosmology as c
 
 ###############################
 ###### POWER LAW SAMPLING #####
@@ -55,6 +56,16 @@ def get_expected(l: np.ndarray, r: np.ndarray, a: float, b: float, power: float,
     np array with expected number of data points for each bin
     '''
     return (l**(power+1) - r**(power+1)) * n / (a**(power+1) - b**(power+1))
+
+###############################
+####### MIN L FUNCTIONS #######
+###############################
+
+def standard(zs: Union[float, np.ndarray], F: float = 1, alpha: float = 1) -> Union[float, np.ndarray]:
+    return c.E_v(Fs=F, z=zs, alpha=alpha)
+
+def allow_all(zs: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+    return 1e19*zs + 1e21
 
 ##################################
 ##### REALISTIC FRB SAMPLING #####

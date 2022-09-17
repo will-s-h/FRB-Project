@@ -99,6 +99,15 @@ def g_complex(z: Union[float, np.ndarray], k: Union[float, np.ndarray]) -> Union
 def truncate(x: np.ndarray, y: np.ndarray, z: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     return x[y > x], y[y > x], z[y > x]
 
+def ktau_fast(y, x, z, gfunc, k):
+    # try to do ktau_E in O(N log N) or less
+    # for now, use default parameters
+    x, y, z = truncate(x, y, z) 
+    gs = gfunc(z, k)
+    xevo, yevo = x/gs, y/gs
+    
+    pass
+
 def ktau_E(_y: np.ndarray, _x: np.ndarray, _z: np.ndarray, gfunc: Callable[[np.ndarray, float], np.ndarray], k: float, params: Union[None, str, list[int]] = None) -> float:
     '''
     INPUT:

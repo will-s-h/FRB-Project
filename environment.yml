@@ -98,4 +98,5 @@ dependencies:
   - zstd=1.5.2=hcb37349_0
   - pip:
     - pynverse==0.1.4.4
+    - sortedcontainers==2.4.0
 prefix: /opt/anaconda3/envs/2022
