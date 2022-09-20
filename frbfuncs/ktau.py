@@ -3,6 +3,9 @@
 import numpy as np
 import cosmology as c
 from typing import *
+from queue import Queue
+from sortedcontainers import SortedList
+from bisect import bisect_right
 
 #################################
 ########### CONSTANTS ###########
@@ -99,16 +102,58 @@ def g_complex(z: Union[float, np.ndarray], k: Union[float, np.ndarray]) -> Union
 def truncate(x: np.ndarray, y: np.ndarray, z: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     return x[y > x], y[y > x], z[y > x]
 
-def ktau_fast(y, x, z, gfunc, k):
-    # try to do ktau_E in O(N log N) or less
-    # for now, use default parameters
+def ktau_fast(y: np.ndarray, x: np.ndarray, z: np.ndarray, gfunc: Callable[[np.ndarray, float], np.ndarray] = g_complex, k:float = 0, debug: bool = False) -> float:
+    '''
+    ktau, but only for default parameters.
+    performs analysis in O(N log N).
+    '''
+    
     x, y, z = truncate(x, y, z) 
     gs = gfunc(z, k)
     xevo, yevo = x/gs, y/gs
+    sortedx, sortedy = c.sort_by_first(xevo, yevo)
     
-    pass
+    todelete = [[] for i in range(len(sortedx)+1)]
+    toadd = Queue() # queue of {y, x} pairs
+    S = SortedList() # contains sorted list of luminosities currently in the sorted set
 
-def ktau_E(_y: np.ndarray, _x: np.ndarray, _z: np.ndarray, gfunc: Callable[[np.ndarray, float], np.ndarray], k: float, params: Union[None, str, list[int]] = None) -> float:
+    ns = np.zeros(len(sortedx))
+    rnks = np.zeros(len(sortedx))
+
+    for i in range(len(sortedx)): # O(N log N)
+        # permanently add all FRBs with L_min < Lmin,i
+        while not toadd.empty() and toadd.queue[0][1] < sortedx[i]:
+            pair = toadd.get()
+            S.add(pair[0])
+        
+        # delete all FRBs with L < Lmin,i
+        for todel in todelete[i]:
+            S.discard(todel)
+        
+        # temporarily add this current FRB into the set
+        S.add(sortedy[i])
+        ranklo, rankhi = S.bisect_left(sortedy[i]), S.bisect_right(sortedy[i])-1
+        rank = (ranklo+rankhi)/2 + 1
+        rnks[i] = rank
+        ns[i] = len(S)
+        S.discard(sortedy[i])
+        
+        if debug:
+            print(ns[i], rnks[i])
+            
+        # place the toadd marker for this FRB
+        toadd.put((sortedy[i], sortedx[i]))
+
+        # place the todelete marker for this FRB
+        todelete[bisect_right(sortedx, sortedy[i])].append(sortedy[i])
+
+    rnks = rnks[ns > 1] #excludes ns = 1 cases
+    ns = ns[ns > 1]
+
+    _T = (rnks-.5*(ns+1))/np.sqrt((ns**2 - 1)/12)
+    return np.sum(_T)/(len(_T))**0.5
+
+def ktau_E(_y: np.ndarray, _x: np.ndarray, _z: np.ndarray, gfunc: Callable[[np.ndarray, float], np.ndarray] = g_complex, k: float = 0, params: Union[None, str, list[int]] = None, debug: bool = False) -> float:
     '''
     INPUT:
     _y = Es
@@ -129,6 +174,7 @@ def ktau_E(_y: np.ndarray, _x: np.ndarray, _z: np.ndarray, gfunc: Callable[[np.n
         params[3]: dealing with lower boundary in y
             0 (old, default): y >= x used (paper suggested)
             1 (story's): y > x used in associated set
+    debug: default is False. if True, will print ns and rnks.
     
     some special inputs:
     None -> params = [0,0,0,0] (default)
@@ -144,7 +190,7 @@ def ktau_E(_y: np.ndarray, _x: np.ndarray, _z: np.ndarray, gfunc: Callable[[np.n
     
     x, y, z = truncate(_x, _y, _z)
     gs = gfunc(z, k)
-    yevo = y/gs
+    xevo, yevo = x/gs, y/gs
     
     ns = np.zeros(len(yevo))
     rnks = np.zeros(len(yevo))
@@ -152,7 +198,7 @@ def ktau_E(_y: np.ndarray, _x: np.ndarray, _z: np.ndarray, gfunc: Callable[[np.n
     
     for i in range(len(yevo)):
         includei[i] = True
-        mask = ((yevo > x[i]/gs[i]) if params[3] == 1 else (yevo >= x[i]/gs[i])) & ((x <= x[i]) if params[2] == 1 else (x < x[i]) | includei) 
+        mask = ((yevo > xevo[i]) if params[3] == 1 else (yevo >= xevo[i])) & ((x <= x[i]) if params[2] == 1 else (x < x[i]) | includei) # all instances of x changed to xevo
         includei[i] = False
         
         ns[i] = np.sum(mask)
@@ -160,7 +206,8 @@ def ktau_E(_y: np.ndarray, _x: np.ndarray, _z: np.ndarray, gfunc: Callable[[np.n
         rank_hi = np.sum(yevo[mask] <= yevo[i])
         rnks[i] = rank_hi if params[1] == 1 else (rank_lo + rank_hi)/2
         
-        #print(ns[i], rnks[i])
+        if debug:
+            print(ns[i], rnks[i])
         
         if(params[0] == 1 and ns[i] == 1):
             ns[i] += 2
@@ -172,3 +219,20 @@ def ktau_E(_y: np.ndarray, _x: np.ndarray, _z: np.ndarray, gfunc: Callable[[np.n
     
     _T = (rnks-.5*(ns+1))/np.sqrt((ns**2 - 1)/12)
     return np.sum(_T)/(len(_T))**0.5
+
+def binary_search_k(minL, L, z, truek, func=ktau_fast, precision=1e-3):
+    lo = truek-10
+    hi = truek+10
+    
+    while hi - lo > precision:
+        kmid = (hi+lo)/2
+        taumid = func(L, minL, z, gfunc=g_complex, k=kmid)
+        
+        if taumid > 0:
+            lo = kmid
+        elif taumid < 0:
+            hi = kmid
+        else:
+            return kmid
+    
+    return (hi+lo)/2

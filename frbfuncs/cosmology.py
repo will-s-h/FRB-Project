@@ -82,7 +82,7 @@ def sort_by_first(list1: Union[list, np.ndarray], list2: Union[list, np.ndarray]
     sorted_pairs = sorted(zipped_lists, key=lambda x:x[0]) #sort by first element, sort in place if first element equal
 
     tuples = zip(*sorted_pairs)
-    list1, list2 = [list(tuplee) for tuplee in  tuples]
+    list1, list2 = [list(tuplee) for tuplee in tuples]
     return np.array(list1), np.array(list2)
 
 from scipy import integrate

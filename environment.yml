@@ -99,4 +99,5 @@ dependencies:
   - pip:
     - pynverse==0.1.4.4
     - sortedcontainers==2.4.0
+    - sympy==1.11.1
 prefix: /opt/anaconda3/envs/2022
