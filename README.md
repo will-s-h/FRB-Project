@@ -1,6 +1,6 @@
 # FRB Project
 
-Contains python files and data about the FRB project I worked on with Professor Petrosian from 2020-2022.
+Contains the Python package for the Efron-Petrosian statistical analysis of FRBs. Coding was led by lead researcher William Huang, under the direction of Professor Petrosian.
 
 ### Notes About Files
 
